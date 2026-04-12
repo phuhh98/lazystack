@@ -22,7 +22,7 @@ const ExternalLink: React.FC<
       rel={rel || 'noopener noreferrer'}
       className={cn(
         withIcon
-          ? 'rounded-xl p-2 text-[var(--sea-ink-soft)] transition hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)]'
+          ? 'rounded-xl p-2 text-(--sea-ink-soft) transition hover:bg-(--link-bg-hover) hover:text-(--sea-ink)'
           : 'nav-link',
         className ?? '',
       )}

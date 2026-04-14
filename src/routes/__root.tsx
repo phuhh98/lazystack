@@ -1,4 +1,4 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRoute, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import Footer from '../components/Footer'
@@ -13,48 +13,43 @@ const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getIte
 export const Route = createRootRoute({
   head: () => ({
     meta: [
-      {
-        charSet: 'utf-8',
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
-      {
-        title: 'TanStack Start Starter',
-      },
+      { charSet: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { title: 'LazyStack' },
     ],
-    links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
-    ],
+    links: [{ rel: 'stylesheet', href: appCss }],
   }),
   shellComponent: RootDocument,
 })
 
+function FooterConditional() {
+  const isGameRoom = useRouterState({
+    select: (s) => /^\/planning-poker\/.+/.test(s.location.pathname),
+  })
+  if (isGameRoom) return null
+  return <Footer />
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const isGameRoom = useRouterState({
+    select: (s) => /^\/planning-poker\/.+/.test(s.location.pathname),
+  })
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="flex flex-col font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)] min-h-screen h-screen">
+      <body className={cn(
+        'flex flex-col font-sans antialiased wrap-anywhere selection:bg-[rgba(204,136,83,0.2)] min-h-screen',
+        isGameRoom && 'h-screen',
+      )}>
         <Header />
-        <Container className={cn('grow')}>{children}</Container>
-        <Footer />
+        <Container className={cn('grow', isGameRoom ? 'overflow-hidden' : 'overflow-y-auto')}>{children}</Container>
+        <FooterConditional />
         <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
+          config={{ position: 'bottom-right' }}
+          plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
         />
         <Scripts />
       </body>

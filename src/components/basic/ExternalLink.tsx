@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils/styles'
-import type { AnchorHTMLAttributes, HTMLAttributeReferrerPolicy } from 'react'
+import type { AnchorHTMLAttributes } from 'react'
 
 const ExternalLink: React.FC<
   React.PropsWithChildren &

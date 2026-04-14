@@ -1,0 +1,6 @@
+{
+  "enabledPlugins": {
+    "caveman@caveman": true,
+    "playwright@claude-plugins-official": true
+  }
+}

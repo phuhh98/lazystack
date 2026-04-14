@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as StorybookIndexRouteImport } from './routes/storybook/index'
-import { Route as StorybookTestRouteImport } from './routes/storybook/test'
+import { Route as PlanningPokerIndexRouteImport } from './routes/planning-poker/index'
+import { Route as PlanningPokerRoomIdRouteImport } from './routes/planning-poker/$roomId'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
@@ -24,49 +24,54 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StorybookIndexRoute = StorybookIndexRouteImport.update({
-  id: '/storybook/',
-  path: '/storybook/',
+const PlanningPokerIndexRoute = PlanningPokerIndexRouteImport.update({
+  id: '/planning-poker/',
+  path: '/planning-poker/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StorybookTestRoute = StorybookTestRouteImport.update({
-  id: '/storybook/test',
-  path: '/storybook/test',
+const PlanningPokerRoomIdRoute = PlanningPokerRoomIdRouteImport.update({
+  id: '/planning-poker/$roomId',
+  path: '/planning-poker/$roomId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/storybook/test': typeof StorybookTestRoute
-  '/storybook/': typeof StorybookIndexRoute
+  '/planning-poker/$roomId': typeof PlanningPokerRoomIdRoute
+  '/planning-poker/': typeof PlanningPokerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/storybook/test': typeof StorybookTestRoute
-  '/storybook': typeof StorybookIndexRoute
+  '/planning-poker/$roomId': typeof PlanningPokerRoomIdRoute
+  '/planning-poker': typeof PlanningPokerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/storybook/test': typeof StorybookTestRoute
-  '/storybook/': typeof StorybookIndexRoute
+  '/planning-poker/$roomId': typeof PlanningPokerRoomIdRoute
+  '/planning-poker/': typeof PlanningPokerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/storybook/test' | '/storybook/'
+  fullPaths: '/' | '/about' | '/planning-poker/$roomId' | '/planning-poker/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/storybook/test' | '/storybook'
-  id: '__root__' | '/' | '/about' | '/storybook/test' | '/storybook/'
+  to: '/' | '/about' | '/planning-poker/$roomId' | '/planning-poker'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/planning-poker/$roomId'
+    | '/planning-poker/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  StorybookTestRoute: typeof StorybookTestRoute
-  StorybookIndexRoute: typeof StorybookIndexRoute
+  PlanningPokerRoomIdRoute: typeof PlanningPokerRoomIdRoute
+  PlanningPokerIndexRoute: typeof PlanningPokerIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -85,18 +90,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/storybook/': {
-      id: '/storybook/'
-      path: '/storybook'
-      fullPath: '/storybook/'
-      preLoaderRoute: typeof StorybookIndexRouteImport
+    '/planning-poker/': {
+      id: '/planning-poker/'
+      path: '/planning-poker'
+      fullPath: '/planning-poker/'
+      preLoaderRoute: typeof PlanningPokerIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/storybook/test': {
-      id: '/storybook/test'
-      path: '/storybook/test'
-      fullPath: '/storybook/test'
-      preLoaderRoute: typeof StorybookTestRouteImport
+    '/planning-poker/$roomId': {
+      id: '/planning-poker/$roomId'
+      path: '/planning-poker/$roomId'
+      fullPath: '/planning-poker/$roomId'
+      preLoaderRoute: typeof PlanningPokerRoomIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -105,8 +110,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  StorybookTestRoute: StorybookTestRoute,
-  StorybookIndexRoute: StorybookIndexRoute,
+  PlanningPokerRoomIdRoute: PlanningPokerRoomIdRoute,
+  PlanningPokerIndexRoute: PlanningPokerIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

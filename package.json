@@ -15,7 +15,7 @@
     "check": "prettier --write . && eslint --fix",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "signaling": "node node_modules/y-webrtc/bin/server.js"
+    "serve:signaling": "node ./bin/server.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

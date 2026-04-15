@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import PokerHand from './PokerHand'
+import PokerHand from '../../../components/planning-poker/PokerHand'
 
 const meta: Meta<typeof PokerHand> = {
-  title: 'Planning Poker/PokerHand',
+  title: 'PlanningPoker/PokerHand',
   component: PokerHand,
   parameters: { layout: 'centered' },
   args: { chat: [] },
@@ -11,9 +11,33 @@ export default meta
 type Story = StoryObj<typeof PokerHand>
 
 const samplePlayers = [
-  { id: '1', name: 'Alice', vote: '5', voted: true, isOnline: true, lastSeen: Date.now(), handRaised: false },
-  { id: '2', name: 'Bob', vote: null, voted: false, isOnline: true, lastSeen: Date.now(), handRaised: true },
-  { id: '3', name: 'Carol', vote: '8', voted: true, isOnline: false, lastSeen: Date.now() - 60000, handRaised: false },
+  {
+    id: '1',
+    name: 'Alice',
+    vote: '5',
+    voted: true,
+    isOnline: true,
+    lastSeen: Date.now(),
+    handRaised: false,
+  },
+  {
+    id: '2',
+    name: 'Bob',
+    vote: null,
+    voted: false,
+    isOnline: true,
+    lastSeen: Date.now(),
+    handRaised: true,
+  },
+  {
+    id: '3',
+    name: 'Carol',
+    vote: '8',
+    voted: true,
+    isOnline: false,
+    lastSeen: Date.now() - 60000,
+    handRaised: false,
+  },
 ]
 
 export const Voting: Story = {

@@ -15,6 +15,9 @@ const dirname =
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 const config = defineConfig({
   resolve: {
+    alias: {
+      '@': path.resolve(dirname, './src'),
+    },
     tsconfigPaths: true,
   },
   plugins: [

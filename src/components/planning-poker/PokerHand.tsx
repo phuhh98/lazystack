@@ -1,7 +1,11 @@
 import { Tooltip } from '@base-ui/react'
 import { Crown } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import type { ChatMessage, GamePhase, PlayerData } from '@/hooks/usePlanningPoker'
+import type {
+  ChatMessage,
+  GamePhase,
+  PlayerData,
+} from '@/hooks/usePlanningPoker'
 
 interface PokerHandProps {
   players: PlayerData[]
@@ -15,7 +19,7 @@ interface PokerHandProps {
 function CardJoker() {
   return (
     <div
-      className="absolute inset-0 flex items-center justify-center rounded-xl"
+      className="absolute inset-0 flex items-center justify-center rounded-xlf font-title"
       style={{
         background: 'var(--surface-strong)',
         border: '1.5px solid var(--border)',
@@ -89,7 +93,8 @@ function CardVotedBack() {
     <div
       className="absolute inset-0 flex items-center justify-center rounded-xl"
       style={{
-        background: 'linear-gradient(135deg, var(--primary), var(--primary-deep))',
+        background:
+          'linear-gradient(135deg, var(--primary), var(--primary-deep))',
         backfaceVisibility: 'hidden',
       }}
     >
@@ -97,7 +102,10 @@ function CardVotedBack() {
         className="absolute inset-[6px] rounded-lg"
         style={{ border: '1.5px solid rgba(255,255,255,0.3)' }}
       />
-      <span className="relative text-xl font-bold" style={{ color: 'rgba(255,255,255,0.9)' }}>
+      <span
+        className="relative text-xl font-bold"
+        style={{ color: 'rgba(255,255,255,0.9)' }}
+      >
         ✓
       </span>
     </div>
@@ -168,7 +176,8 @@ function PlayerCard({
   recentMsg: ChatMessage | null
 }) {
   const isRevealed = phase === 'revealed'
-  const rotation = player.voted && !isRevealed ? 'rotateY(180deg)' : 'rotateY(0deg)'
+  const rotation =
+    player.voted && !isRevealed ? 'rotateY(180deg)' : 'rotateY(0deg)'
 
   return (
     <Tooltip.Provider delay={300}>
@@ -191,7 +200,10 @@ function PlayerCard({
                   transformStyle: 'preserve-3d',
                   transform: rotation,
                   transition: 'transform 0.6s ease',
-                  animation: (player.voted && !isRevealed) ? 'float-card 2.6s ease-in-out infinite' : undefined,
+                  animation:
+                    player.voted && !isRevealed
+                      ? 'float-card 2.6s ease-in-out infinite'
+                      : undefined,
                 }}
               >
                 {/* Face A — front (no rotateY here) */}
@@ -202,7 +214,11 @@ function PlayerCard({
                     backfaceVisibility: 'hidden',
                   }}
                 >
-                  {isRevealed ? <CardFront value={player.vote} /> : <CardJoker />}
+                  {isRevealed ? (
+                    <CardFront value={player.vote} />
+                  ) : (
+                    <CardJoker />
+                  )}
                 </div>
 
                 {/* Face B — back (rotateY 180 applied at wrapper, not inside component) */}
@@ -244,7 +260,11 @@ function PlayerCard({
               {/* Player name */}
               <div className="flex items-center gap-1">
                 {isModerator && (
-                  <Crown size={10} className="shrink-0" style={{ color: 'var(--primary)' }} />
+                  <Crown
+                    size={10}
+                    className="shrink-0"
+                    style={{ color: 'var(--primary)' }}
+                  />
                 )}
                 <span
                   className="max-w-[136px] truncate text-sm font-medium"
@@ -318,7 +338,7 @@ export default function PokerHand({
 
   return (
     <>
-    <style>{`
+      <style>{`
       @keyframes wave-hand {
         0%   { transform: rotate(-10deg); }
         50%  { transform: rotate(20deg); }
@@ -329,22 +349,22 @@ export default function PokerHand({
         50%       { translate: 0 -7px; }
       }
     `}</style>
-    <div className="island-shell rounded-xl p-3 flex-1 min-h-0 flex flex-col">
-      <p className="island-kicker mb-3 shrink-0">Players</p>
-      {/* pt-10 gives 40px clearance so speech bubbles aren't clipped by overflow-auto */}
-      <div className="flex flex-wrap justify-center gap-4 overflow-auto pt-16">
-        {players.map((player) => (
-          <PlayerCard
-            key={player.id}
-            player={player}
-            phase={phase}
-            isSelf={player.id === currentPlayerId}
-            isModerator={player.id === moderatorId}
-            recentMsg={recentMsgs.get(player.id) ?? null}
-          />
-        ))}
+      <div className="island-shell rounded-xl p-3 flex-1 min-h-0 flex flex-col">
+        <p className="island-kicker mb-3 shrink-0">Players</p>
+        {/* pt-10 gives 40px clearance so speech bubbles aren't clipped by overflow-auto */}
+        <div className="flex flex-wrap justify-center gap-4 overflow-auto pt-16">
+          {players.map((player) => (
+            <PlayerCard
+              key={player.id}
+              player={player}
+              phase={phase}
+              isSelf={player.id === currentPlayerId}
+              isModerator={player.id === moderatorId}
+              recentMsg={recentMsgs.get(player.id) ?? null}
+            />
+          ))}
+        </div>
       </div>
-    </div>
     </>
   )
 }

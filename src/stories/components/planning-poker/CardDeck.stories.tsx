@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
-import CardDeck from './CardDeck'
+import CardDeck from '../../../components/planning-poker/CardDeck'
 
 const CARDS = ['1', '2', '3', '5', '8', '13', '21', '?', '☕']
 
@@ -39,7 +39,11 @@ export const WithSelection: Story = {
 export const Disabled: Story = {
   args: { selectedCard: '8', disabled: true },
   parameters: {
-    docs: { description: { story: 'Cards are disabled after voting or when phase is not voting.' } },
+    docs: {
+      description: {
+        story: 'Cards are disabled after voting or when phase is not voting.',
+      },
+    },
   },
 }
 
@@ -56,6 +60,10 @@ export const AllCards: Story = {
     )
   },
   parameters: {
-    docs: { description: { story: 'Interactive: click cards to select/deselect.' } },
+    docs: {
+      description: {
+        story: 'Interactive: click cards to select/deselect.',
+      },
+    },
   },
 }

@@ -1,4 +1,9 @@
-import { HeadContent, Scripts, createRootRoute, useRouterState } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Scripts,
+  createRootRoute,
+  useRouterState,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import Footer from '../components/Footer'
@@ -40,16 +45,30 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className={cn(
-        'flex flex-col font-sans antialiased wrap-anywhere selection:bg-[rgba(204,136,83,0.2)] min-h-screen',
-        isGameRoom && 'h-screen',
-      )}>
+      <body
+        className={cn(
+          'flex flex-col font-content antialiased wrap-anywhere selection:bg-[rgba(204,136,83,0.2)] min-h-screen',
+          isGameRoom && 'h-screen',
+        )}
+      >
         <Header />
-        <Container className={cn('grow', isGameRoom ? 'overflow-hidden' : 'overflow-y-auto')}>{children}</Container>
+        <Container
+          className={cn(
+            'grow',
+            isGameRoom ? 'overflow-hidden' : 'overflow-y-auto',
+          )}
+        >
+          {children}
+        </Container>
         <FooterConditional />
         <TanStackDevtools
           config={{ position: 'bottom-right' }}
-          plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
+          plugins={[
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
         />
         <Scripts />
       </body>

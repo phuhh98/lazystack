@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import ExternalLink from './ExternalLink'
-import GithubIcon from '@/components/brandIcons/GithubIcon'
+import ExternalLink from '../../../components/basic/ExternalLink'
+import GithubIcon from '../../../components/brandIcons/GithubIcon'
 
 const meta: Meta<typeof ExternalLink> = {
-  title: 'Components/ExternalLink',
+  title: 'Basic/ExternalLink',
   component: ExternalLink,
   parameters: {
     layout: 'centered',
@@ -98,55 +98,15 @@ export const Multiple: Story = {
 export const IconGroup: Story = {
   render: (args) => (
     <div className="flex gap-2">
-      <ExternalLink
-        href="https://github.com"
-        withIcon
-        title="GitHub"
-        className={args.className}
-      >
-        GH
+      <ExternalLink href="https://github.com" withIcon {...args}>
+        <GithubIcon size={20} />
       </ExternalLink>
-      <ExternalLink
-        href="https://twitter.com"
-        withIcon
-        title="Twitter"
-        className={args.className}
-      >
-        TW
-      </ExternalLink>
-      <ExternalLink
-        href="https://linkedin.com"
-        withIcon
-        title="LinkedIn"
-        className={args.className}
-      >
-        LI
+      <ExternalLink href="https://twitter.com" withIcon {...args}>
+        <GithubIcon size={20} />
       </ExternalLink>
     </div>
   ),
   args: {
     className: '',
-  },
-}
-
-/**
- * External link with custom className
- */
-export const CustomStyling: Story = {
-  args: {
-    href: 'https://example.com',
-    children: 'Custom Styled Link',
-    className: 'text-red-600 font-bold underline',
-  },
-}
-
-/**
- * External link with different rel attribute
- */
-export const WithCustomRel: Story = {
-  args: {
-    href: 'https://example.com',
-    children: 'Link with custom rel',
-    rel: 'noopener noreferrer nofollow',
   },
 }

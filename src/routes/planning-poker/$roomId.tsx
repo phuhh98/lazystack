@@ -18,7 +18,13 @@ export const Route = createFileRoute('/planning-poker/$roomId')({
 const CARDS = ['1', '2', '3', '5', '8', '13', '21', '?', '☕']
 
 // SVG analog countdown clock
-function CountdownClock({ remaining, total }: { remaining: number; total: number }) {
+function CountdownClock({
+  remaining,
+  total,
+}: {
+  remaining: number
+  total: number
+}) {
   const r = 18
   const circ = 2 * Math.PI * r
   const frac = total > 0 ? remaining / total : 0
@@ -26,9 +32,19 @@ function CountdownClock({ remaining, total }: { remaining: number; total: number
   const urgent = remaining <= 5
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" className="shrink-0">
-      <circle cx="20" cy="20" r={r} fill="none" stroke="var(--border)" strokeWidth="3" />
       <circle
-        cx="20" cy="20" r={r} fill="none"
+        cx="20"
+        cy="20"
+        r={r}
+        fill="none"
+        stroke="var(--border)"
+        strokeWidth="3"
+      />
+      <circle
+        cx="20"
+        cy="20"
+        r={r}
+        fill="none"
         stroke={urgent ? 'var(--success)' : 'var(--primary)'}
         strokeWidth="3"
         strokeDasharray={`${dash} ${circ - dash}`}
@@ -36,8 +52,14 @@ function CountdownClock({ remaining, total }: { remaining: number; total: number
         transform="rotate(-90 20 20)"
         style={{ transition: 'stroke-dasharray 1s linear' }}
       />
-      <text x="20" y="24" textAnchor="middle" fontSize="11" fontWeight="700"
-        fill={urgent ? 'var(--success)' : 'var(--ink)'}>
+      <text
+        x="20"
+        y="24"
+        textAnchor="middle"
+        fontSize="11"
+        fontWeight="700"
+        fill={urgent ? 'var(--success)' : 'var(--ink)'}
+      >
         {remaining}
       </text>
     </svg>
@@ -92,7 +114,10 @@ function StorySidebar({
       <div className="shrink-0">
         <p className="island-kicker mb-1">Room</p>
         <div className="flex items-center gap-1.5">
-          <span className="font-mono text-sm font-semibold" style={{ color: 'var(--ink)' }}>
+          <span
+            className="font-mono text-sm font-semibold"
+            style={{ color: 'var(--ink)' }}
+          >
             {roomId}
           </span>
           <button
@@ -104,8 +129,14 @@ function StorySidebar({
           >
             {copied ? <Check size={11} /> : <Copy size={11} />}
           </button>
-          <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--ink-muted)' }}>
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--success)' }} />
+          <span
+            className="flex items-center gap-1 text-xs"
+            style={{ color: 'var(--ink-muted)' }}
+          >
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: 'var(--success)' }}
+            />
             {onlineCount}
           </span>
         </div>
@@ -122,7 +153,11 @@ function StorySidebar({
           onChange={(e) => setInput(e.target.value)}
           placeholder="Add story…"
           className="min-w-0 flex-1 rounded-lg border px-2 py-1.5 text-xs outline-none"
-          style={{ borderColor: 'var(--border)', background: 'var(--surface)', color: 'var(--ink)' }}
+          style={{
+            borderColor: 'var(--border)',
+            background: 'var(--surface)',
+            color: 'var(--ink)',
+          }}
         />
         <button
           type="submit"
@@ -150,7 +185,10 @@ function StorySidebar({
                 e.dataTransfer.setData('text/plain', story.id)
                 e.dataTransfer.effectAllowed = 'move'
               }}
-              onDragOver={(e) => { e.preventDefault(); setDragOverId(story.id) }}
+              onDragOver={(e) => {
+                e.preventDefault()
+                setDragOverId(story.id)
+              }}
               onDragLeave={() => setDragOverId(null)}
               onDrop={(e) => {
                 e.preventDefault()
@@ -161,8 +199,18 @@ function StorySidebar({
               onDragEnd={() => setDragOverId(null)}
               className="flex items-center gap-1 rounded-lg border px-2 py-1.5 transition-colors"
               style={{
-                borderColor: dragOverId === story.id ? 'var(--primary)' : story.estimatedVote ? 'var(--primary)' : 'var(--border)',
-                background: dragOverId === story.id ? 'rgba(204,136,83,0.1)' : story.estimatedVote ? 'rgba(204,136,83,0.06)' : 'var(--surface)',
+                borderColor:
+                  dragOverId === story.id
+                    ? 'var(--primary)'
+                    : story.estimatedVote
+                      ? 'var(--primary)'
+                      : 'var(--border)',
+                background:
+                  dragOverId === story.id
+                    ? 'rgba(204,136,83,0.1)'
+                    : story.estimatedVote
+                      ? 'rgba(204,136,83,0.06)'
+                      : 'var(--surface)',
                 cursor: story.estimatedVote ? 'default' : 'grab',
               }}
             >
@@ -240,7 +288,10 @@ function ParticipantStorySidebar({
       <div className="shrink-0">
         <p className="island-kicker mb-1">Room</p>
         <div className="flex items-center gap-1.5">
-          <span className="font-mono text-sm font-semibold" style={{ color: 'var(--ink)' }}>
+          <span
+            className="font-mono text-sm font-semibold"
+            style={{ color: 'var(--ink)' }}
+          >
             {roomId}
           </span>
           <button
@@ -252,8 +303,14 @@ function ParticipantStorySidebar({
           >
             {copied ? <Check size={11} /> : <Copy size={11} />}
           </button>
-          <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--ink-muted)' }}>
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--success)' }} />
+          <span
+            className="flex items-center gap-1 text-xs"
+            style={{ color: 'var(--ink-muted)' }}
+          >
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: 'var(--success)' }}
+            />
             {onlineCount}
           </span>
         </div>
@@ -275,7 +332,11 @@ function ParticipantStorySidebar({
                 key={story.id}
                 className="flex items-center gap-1.5 rounded-lg border px-2 py-1.5"
                 style={{
-                  borderColor: isActive ? 'var(--primary)' : story.estimatedVote ? 'var(--primary)' : 'var(--border)',
+                  borderColor: isActive
+                    ? 'var(--primary)'
+                    : story.estimatedVote
+                      ? 'var(--primary)'
+                      : 'var(--border)',
                   background: isActive
                     ? 'rgba(204,136,83,0.1)'
                     : story.estimatedVote
@@ -382,10 +443,14 @@ function GameRoom() {
           </div>
         </div>
         <RightSidebar
-          chat={chat} playerId={playerId} onSend={sendMessage}
-          players={players} isModerator={isModerator}
+          chat={chat}
+          playerId={playerId}
+          onSend={sendMessage}
+          players={players}
+          isModerator={isModerator}
           timerDuration={gameState.timerDuration}
-          onToggleHand={toggleHand} onLowerHand={lowerHand}
+          onToggleHand={toggleHand}
+          onLowerHand={lowerHand}
           onSetTimerDuration={setTimerDuration}
           codeWord={gameState.codeWord}
           onSetCodeWord={isModerator ? setCodeWord : undefined}
@@ -412,7 +477,9 @@ function GameRoom() {
     setAdHocInput('')
   }
 
-  const allVoted = players.length > 0 && players.filter((p) => p.isOnline).every((p) => p.voted)
+  const allVoted =
+    players.length > 0 &&
+    players.filter((p) => p.isOnline).every((p) => p.voted)
   const showConfetti = isConsensus && gameState.phase === 'revealed'
 
   // ── Shared game content ──
@@ -420,17 +487,19 @@ function GameRoom() {
     return (
       <>
         {/* Story section */}
-        <section className="island-shell shrink-0 rounded-xl p-3">
+        <section className="island-shell rounded-xl p-3">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
-
               {/* LOBBY — moderator */}
               {gameState.phase === 'lobby' && isModerator && (
                 <>
                   {gameState.story && !showAdHoc ? (
                     /* Story selected — show name + start button */
                     <div className="flex items-center gap-2">
-                      <h2 className="display-title min-w-0 flex-1 truncate text-xl font-bold" style={{ color: 'var(--ink)' }}>
+                      <h2
+                        className="display-title min-w-0 flex-1 truncate text-xl font-bold"
+                        style={{ color: 'var(--ink)' }}
+                      >
                         {gameState.story}
                       </h2>
                       <button
@@ -445,7 +514,10 @@ function GameRoom() {
                         type="button"
                         onClick={clearStorySelection}
                         className="shrink-0 rounded-lg border px-2 py-1.5 text-xs"
-                        style={{ borderColor: 'var(--border)', color: 'var(--ink-muted)' }}
+                        style={{
+                          borderColor: 'var(--border)',
+                          color: 'var(--ink-muted)',
+                        }}
                       >
                         Change
                       </button>
@@ -460,7 +532,11 @@ function GameRoom() {
                         placeholder="Enter story name…"
                         autoFocus
                         className="min-w-0 flex-1 rounded-lg border px-3 py-1.5 text-sm outline-none"
-                        style={{ borderColor: 'var(--border)', background: 'var(--surface)', color: 'var(--ink)' }}
+                        style={{
+                          borderColor: 'var(--border)',
+                          background: 'var(--surface)',
+                          color: 'var(--ink)',
+                        }}
                       />
                       <button
                         type="submit"
@@ -472,9 +548,15 @@ function GameRoom() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => { setShowAdHoc(false); setAdHocInput('') }}
+                        onClick={() => {
+                          setShowAdHoc(false)
+                          setAdHocInput('')
+                        }}
                         className="rounded-lg border px-2 py-1.5 text-xs"
-                        style={{ borderColor: 'var(--border)', color: 'var(--ink-muted)' }}
+                        style={{
+                          borderColor: 'var(--border)',
+                          color: 'var(--ink-muted)',
+                        }}
                       >
                         Cancel
                       </button>
@@ -482,14 +564,21 @@ function GameRoom() {
                   ) : hasUnestimated ? (
                     /* Stories exist — guide moderator */
                     <div className="flex items-center gap-2">
-                      <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
-                        Click <span style={{ color: 'var(--primary)' }}>▶</span> on a story to select it
+                      <p
+                        className="text-sm"
+                        style={{ color: 'var(--ink-muted)' }}
+                      >
+                        Click <span style={{ color: 'var(--primary)' }}>▶</span>{' '}
+                        on a story to select it
                       </p>
                       <button
                         type="button"
                         onClick={() => setShowAdHoc(true)}
                         className="shrink-0 rounded-lg border px-2 py-1 text-xs"
-                        style={{ borderColor: 'var(--border)', color: 'var(--ink-muted)' }}
+                        style={{
+                          borderColor: 'var(--border)',
+                          color: 'var(--ink-muted)',
+                        }}
                       >
                         Ad-hoc…
                       </button>
@@ -503,7 +592,11 @@ function GameRoom() {
                         onChange={(e) => setAdHocInput(e.target.value)}
                         placeholder="Enter story to estimate…"
                         className="min-w-0 flex-1 rounded-lg border px-3 py-1.5 text-sm outline-none"
-                        style={{ borderColor: 'var(--border)', background: 'var(--surface)', color: 'var(--ink)' }}
+                        style={{
+                          borderColor: 'var(--border)',
+                          background: 'var(--surface)',
+                          color: 'var(--ink)',
+                        }}
                       />
                       <button
                         type="submit"
@@ -535,7 +628,10 @@ function GameRoom() {
                     {gameState.story || '(No story set)'}
                   </h2>
                   {timerRemaining !== null && gameState.phase === 'voting' && (
-                    <CountdownClock remaining={timerRemaining} total={gameState.timerDuration} />
+                    <CountdownClock
+                      remaining={timerRemaining}
+                      total={gameState.timerDuration}
+                    />
                   )}
                 </div>
               )}
@@ -544,14 +640,24 @@ function GameRoom() {
             {/* Status chips — non-moderator */}
             {!isModerator && gameState.phase !== 'lobby' && (
               <div className="flex shrink-0 items-center gap-2">
-                <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--ink-muted)' }}>
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: 'var(--success)' }} />
+                <span
+                  className="flex items-center gap-1 text-xs"
+                  style={{ color: 'var(--ink-muted)' }}
+                >
+                  <span
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ background: 'var(--success)' }}
+                  />
                   {onlineCount} online
                 </span>
                 {gameState.storyIndex > 0 && (
                   <span
                     className="rounded-full border px-2 py-0.5 text-xs"
-                    style={{ borderColor: 'var(--chip-border)', background: 'var(--chip-bg)', color: 'var(--ink-muted)' }}
+                    style={{
+                      borderColor: 'var(--chip-border)',
+                      background: 'var(--chip-bg)',
+                      color: 'var(--ink-muted)',
+                    }}
                   >
                     #{gameState.storyIndex + 1}
                   </span>
@@ -561,20 +667,30 @@ function GameRoom() {
 
             {/* Rename form — moderator during voting */}
             {gameState.phase === 'voting' && isModerator && (
-              <form onSubmit={handleRenameStory} className="flex shrink-0 gap-1.5">
+              <form
+                onSubmit={handleRenameStory}
+                className="flex shrink-0 gap-1.5"
+              >
                 <input
                   type="text"
                   value={adHocInput}
                   onChange={(e) => setAdHocInput(e.target.value)}
                   placeholder="Rename…"
                   className="w-28 rounded-lg border px-2 py-1 text-xs outline-none"
-                  style={{ borderColor: 'var(--border)', background: 'var(--surface)', color: 'var(--ink)' }}
+                  style={{
+                    borderColor: 'var(--border)',
+                    background: 'var(--surface)',
+                    color: 'var(--ink)',
+                  }}
                 />
                 <button
                   type="submit"
                   disabled={!adHocInput.trim()}
                   className="rounded-lg border px-2 py-1 text-xs font-semibold disabled:opacity-40"
-                  style={{ borderColor: 'var(--primary)', color: 'var(--primary)' }}
+                  style={{
+                    borderColor: 'var(--primary)',
+                    color: 'var(--primary)',
+                  }}
                 >
                   Rename
                 </button>
@@ -587,7 +703,10 @@ function GameRoom() {
         {gameState.phase === 'voting' && isModerator && (
           <div
             className="flex shrink-0 items-center justify-between gap-3 rounded-xl border px-4 py-2"
-            style={{ borderColor: 'var(--border)', background: 'var(--surface)' }}
+            style={{
+              borderColor: 'var(--border)',
+              background: 'var(--surface)',
+            }}
           >
             <p className="text-sm" style={{ color: 'var(--ink-muted)' }}>
               {allVoted
@@ -600,7 +719,10 @@ function GameRoom() {
                   type="button"
                   onClick={startTimer}
                   className="rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors"
-                  style={{ borderColor: 'var(--primary)', color: 'var(--primary)' }}
+                  style={{
+                    borderColor: 'var(--primary)',
+                    color: 'var(--primary)',
+                  }}
                 >
                   Start timer
                 </button>
@@ -610,7 +732,10 @@ function GameRoom() {
                   type="button"
                   onClick={stopTimer}
                   className="rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors"
-                  style={{ borderColor: 'var(--border)', color: 'var(--ink-muted)' }}
+                  style={{
+                    borderColor: 'var(--border)',
+                    color: 'var(--ink-muted)',
+                  }}
                 >
                   Stop timer
                 </button>
@@ -629,7 +754,10 @@ function GameRoom() {
 
         {/* Participant voted status — below story section */}
         {gameState.phase === 'voting' && !isModerator && myVote && (
-          <p className="shrink-0 text-center text-sm" style={{ color: 'var(--ink-muted)' }}>
+          <p
+            className="shrink-0 text-center text-sm"
+            style={{ color: 'var(--ink-muted)' }}
+          >
             Voted ✓ — waiting for moderator to reveal…
           </p>
         )}
@@ -658,9 +786,15 @@ function GameRoom() {
         {canClaimModerator && (
           <div
             className="shrink-0 rounded-xl border px-4 py-3"
-            style={{ borderColor: 'var(--primary)', background: 'rgba(204,136,83,0.08)' }}
+            style={{
+              borderColor: 'var(--primary)',
+              background: 'rgba(204,136,83,0.08)',
+            }}
           >
-            <p className="mb-1.5 text-xs font-medium" style={{ color: 'var(--primary-deep)' }}>
+            <p
+              className="mb-1.5 text-xs font-medium"
+              style={{ color: 'var(--primary-deep)' }}
+            >
               Moderator has been offline for a while.
             </p>
             <button
@@ -688,10 +822,14 @@ function GameRoom() {
   }
 
   const rightSidebarProps = {
-    chat, playerId, onSend: sendMessage,
-    players, isModerator,
+    chat,
+    playerId,
+    onSend: sendMessage,
+    players,
+    isModerator,
     timerDuration: gameState.timerDuration,
-    onToggleHand: toggleHand, onLowerHand: lowerHand,
+    onToggleHand: toggleHand,
+    onLowerHand: lowerHand,
     onSetTimerDuration: setTimerDuration,
     codeWord: gameState.codeWord,
     onSetCodeWord: isModerator ? setCodeWord : undefined,
@@ -727,7 +865,11 @@ function GameRoom() {
                 {gameState.storyIndex > 0 && (
                   <span
                     className="rounded-full border px-2.5 py-0.5 text-xs"
-                    style={{ borderColor: 'var(--chip-border)', background: 'var(--chip-bg)', color: 'var(--ink-muted)' }}
+                    style={{
+                      borderColor: 'var(--chip-border)',
+                      background: 'var(--chip-bg)',
+                      color: 'var(--ink-muted)',
+                    }}
                   >
                     Story #{gameState.storyIndex + 1}
                   </span>

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import Confetti from '../../../components/planning-poker/Confetti'
+import Confetti from '@/components/planning-poker/Confetti'
 
 const meta: Meta<typeof Confetti> = {
   title: 'PlanningPoker/Confetti',

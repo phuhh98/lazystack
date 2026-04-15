@@ -16,7 +16,7 @@ export default function Header() {
             className="inline-flex items-center gap-2 rounded-full border border-(--chip-line) bg-(--chip-bg) px-3 py-1.5 text-sm text-[var(--ink)] no-underline shadow-[0_8px_24px_rgba(200,80,30,0.08)] sm:px-4 sm:py-2"
           >
             <span className="h-2 w-2 rounded-full bg-[linear-gradient(90deg,var(--primary),var(--primary-deep))]" />
-            LazyStack
+            <span className="font-title text-xl">LazyStack</span>
           </Link>
         </h2>
 

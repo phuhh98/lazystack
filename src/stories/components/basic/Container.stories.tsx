@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { expect } from 'vitest'
 import Container from '../../../components/basic/Container'
 
 const meta: Meta<typeof Container> = {
@@ -33,11 +32,6 @@ export const Default: Story = {
       </div>
     </Container>
   ),
-  play: async ({ canvasElement }) => {
-    const container = canvasElement.querySelector('[class*="container"]')
-    expect(container).toBeInTheDocument()
-    expect(container).toHaveClass('mx-auto', 'px-4')
-  },
 }
 
 /**

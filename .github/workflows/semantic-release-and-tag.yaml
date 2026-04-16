@@ -1,0 +1,61 @@
+name: LazyStack version tag and deployment
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: 🏷️ Semantic Release & Tagging
+    # Only run if the PR was actually merged
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    # Outputs the new tag name for the next job to use
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch all history to accurately calculate semantic version
+          fetch-depth: 0
+
+      - name: ⚙️ Semantic Release (Tagging Only)
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          config-file: .github/release-please-config-main.json
+          manifest-file: .github/.release-please-manifest-main.json
+
+  trigger_deployment:
+    name: 🐳 Trigger deployment
+    needs: release
+    if: needs.release.outputs.release_created
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    # Define common variables
+    env:
+      VERSION_TAG: ${{ needs.release.outputs.tag_name }}
+      VITE_OUTPUT_DIR: dist # Assuming your vite.config.js uses 'dist'
+      ENV_SUFFIX: DEV
+      APP_NAME: sharebill-ionic
+
+    # TODO: step to trigger Render to update variable value for version
+    # This triggering part could be extract to a reusable workflow?!
+
+    steps:
+      - name: 🚀 Trigger Deployment Webhook
+        run: curl -X POST ${{ secrets.DEPLOYMENT_WEBHOOK_URL }}

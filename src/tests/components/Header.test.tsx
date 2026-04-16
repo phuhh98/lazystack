@@ -1,69 +1,73 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import Header from '../../components/Header'
-import {
-  RouterProvider,
-  createMemoryHistory,
-  createRootRoute,
-  createRouter,
-} from '@tanstack/react-router'
 
-const rootRoute = createRootRoute({
-  component: Header,
-})
+vi.mock('@tanstack/react-router', () => ({
+  Link: ({
+    children,
+    to,
+    className,
+  }: {
+    children: ReactNode
+    to: string
+    className?: string
+  }) => (
+    <a href={to} className={className}>
+      {children}
+    </a>
+  ),
+}))
 
-const router = createRouter({
-  routeTree: rootRoute,
-  history: createMemoryHistory(),
-})
+function mockMatchMedia() {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      addListener: () => {},
+      removeListener: () => {},
+      dispatchEvent: () => false,
+    }),
+  })
+}
 
 describe('Header Component', () => {
   it('renders header with logo', () => {
-    render(
-      <RouterProvider router={router}>
-        <Header />
-      </RouterProvider>,
-    )
-    expect(screen.getByText('LazyStack')).toBeInTheDocument()
+    mockMatchMedia()
+    render(<Header />)
+    expect(screen.getByRole('link', { name: /lazystack/i })).toBeInTheDocument()
   })
 
   it('renders navigation links', () => {
-    render(
-      <RouterProvider router={router}>
-        <Header />
-      </RouterProvider>,
-    )
-    expect(screen.getByText('Home')).toBeInTheDocument()
-    expect(screen.getByText('Planning Poker')).toBeInTheDocument()
+    mockMatchMedia()
+    render(<Header />)
+    expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Planning Poker' }),
+    ).toBeInTheDocument()
   })
 
   it('renders theme toggle button', () => {
-    render(
-      <RouterProvider router={router}>
-        <Header />
-      </RouterProvider>,
-    )
-    const themeButton = screen.getByRole('button', { name: /light|dark|auto/i })
+    mockMatchMedia()
+    render(<Header />)
+    const themeButton = screen.getByRole('button', { name: /theme mode/i })
     expect(themeButton).toBeInTheDocument()
   })
 
   it('has sticky positioning', () => {
-    const { container } = render(
-      <RouterProvider router={router}>
-        <Header />
-      </RouterProvider>,
-    )
+    mockMatchMedia()
+    const { container } = render(<Header />)
     const header = container.querySelector('header')
     expect(header).toHaveClass('sticky', 'top-0', 'z-50')
   })
 
   it('has proper styling classes', () => {
-    const { container } = render(
-      <RouterProvider router={router}>
-        <Header />
-      </RouterProvider>,
-    )
+    mockMatchMedia()
+    const { container } = render(<Header />)
     const header = container.querySelector('header')
     expect(header).toHaveClass('border-b', 'backdrop-blur-lg')
   })

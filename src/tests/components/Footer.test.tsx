@@ -27,7 +27,7 @@ describe('Footer Component', () => {
   it('has footer element with proper styling', () => {
     const { container } = render(<Footer />)
     const footer = container.querySelector('footer')
-    expect(footer).toHaveClass('mt-20', 'border-t')
+    expect(footer).toHaveClass('border-t', 'px-4', 'pt-8', 'pb-6')
   })
 
   it('displays all rights reserved text', () => {

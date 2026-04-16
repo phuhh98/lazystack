@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import RightSidebar from '../../../components/planning-poker/RightSidebar'
 import type { PlayerData } from '@/hooks/usePlanningPoker'
 
@@ -80,8 +79,7 @@ describe('RightSidebar Component', () => {
         codeWord="test-code"
       />,
     )
-    // Should have tabs for different features
-    expect(screen.getByRole('button')).toBeInTheDocument()
+    expect(screen.getByTitle('Raise hand')).toBeInTheDocument()
   })
 
   it('shows code word as participant', () => {
@@ -99,8 +97,8 @@ describe('RightSidebar Component', () => {
         codeWord="test-code-123"
       />,
     )
-    // Code word should be displayed
-    expect(screen.getByRole('button')).toBeInTheDocument()
+    // Code word is used in presets inside the chat panel after opening.
+    expect(screen.getByTitle('Chat')).toBeInTheDocument()
   })
 
   it('shows moderator controls when isModerator is true', () => {
@@ -119,7 +117,6 @@ describe('RightSidebar Component', () => {
         onSetCodeWord={() => {}}
       />,
     )
-    // Moderator should have extra controls
-    expect(screen.getByRole('button')).toBeInTheDocument()
+    expect(screen.getByTitle('Timer settings')).toBeInTheDocument()
   })
 })

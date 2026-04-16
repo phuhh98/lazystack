@@ -9,6 +9,20 @@ describe('ThemeToggle Component', () => {
     localStorage.clear()
     document.documentElement.classList.remove('light', 'dark')
     document.documentElement.removeAttribute('data-theme')
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: (query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+      }),
+    })
   })
 
   it('renders theme toggle button', () => {
@@ -36,7 +50,7 @@ describe('ThemeToggle Component', () => {
 
     await user.click(button)
     await waitFor(() => {
-      expect(localStorage.getItem('theme')).toBeTruthy()
+      expect(localStorage.getItem('theme')).toBe('light')
     })
   })
 

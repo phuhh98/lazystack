@@ -1,6 +1,10 @@
-import { describe, it, expect } from 'vitest'
-import { render } from '@testing-library/react'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { act, render } from '@testing-library/react'
 import Confetti from '../../../components/planning-poker/Confetti'
+
+afterEach(() => {
+  vi.useRealTimers()
+})
 
 describe('Confetti Component', () => {
   it('renders confetti container', () => {
@@ -33,13 +37,28 @@ describe('Confetti Component', () => {
     expect(style?.textContent).toContain('pp-confetti')
   })
 
-  it('hides after animation completes', async () => {
-    const { container, rerender } = render(<Confetti />)
+  it('hides after animation completes', () => {
+    let scheduled: TimerHandler | undefined
+    const setTimeoutSpy = vi
+      .spyOn(globalThis, 'setTimeout')
+      .mockImplementation((fn) => {
+        scheduled = fn
+        return 1 as unknown as ReturnType<typeof setTimeout>
+      })
+
+    const { container } = render(<Confetti />)
     let confettiDiv = container.querySelector('[aria-hidden="true"]')
     expect(confettiDiv).toBeInTheDocument()
 
-    // Wait for auto-dismiss (8.5 seconds)
-    await new Promise((resolve) => setTimeout(resolve, 8600))
-    rerender(<Confetti />)
+    act(() => {
+      if (typeof scheduled === 'function') {
+        scheduled()
+      }
+    })
+
+    confettiDiv = container.querySelector('[aria-hidden="true"]')
+    expect(confettiDiv).not.toBeInTheDocument()
+
+    setTimeoutSpy.mockRestore()
   })
 })

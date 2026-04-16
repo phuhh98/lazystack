@@ -5,8 +5,8 @@ import StoryPresetPanel from '../../../components/planning-poker/StoryPresetPane
 import type { StoryItem } from '@/hooks/usePlanningPoker'
 
 const mockStories: StoryItem[] = [
-  { id: '1', title: 'Story 1', estimatedVote: null, discussionId: '' },
-  { id: '2', title: 'Story 2', estimatedVote: null, discussionId: '' },
+  { id: '1', title: 'Story 1', estimatedVote: undefined },
+  { id: '2', title: 'Story 2', estimatedVote: undefined },
 ]
 
 describe('StoryPresetPanel Component', () => {
@@ -55,8 +55,8 @@ describe('StoryPresetPanel Component', () => {
         onReorder={() => {}}
       />,
     )
-    // Should have input field for adding stories
-    expect(screen.getByRole('button')).toBeInTheDocument()
+    const trigger = screen.getByRole('button', { name: /story list/i })
+    expect(trigger).toBeInTheDocument()
   })
 
   it('calls onAdd when adding story', async () => {
@@ -71,8 +71,12 @@ describe('StoryPresetPanel Component', () => {
       />,
     )
 
-    // Test would require accessing the input field and form
-    expect(screen.getByRole('button')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /story list/i }))
+    const input = screen.getByPlaceholderText('Add a story or task…')
+    await user.type(input, 'New Story')
+    await user.click(screen.getByRole('button', { name: /add story/i }))
+
+    expect(onAdd).toHaveBeenCalledWith('New Story')
   })
 
   it('disabled prop disables interactions', () => {
@@ -88,8 +92,10 @@ describe('StoryPresetPanel Component', () => {
     expect(screen.getByText(/Story List/i)).toBeInTheDocument()
   })
 
-  it('renders story items', () => {
-    const { container } = render(
+  it('renders story items', async () => {
+    const user = userEvent.setup()
+
+    render(
       <StoryPresetPanel
         storyList={mockStories}
         onAdd={() => {}}
@@ -97,6 +103,9 @@ describe('StoryPresetPanel Component', () => {
         onReorder={() => {}}
       />,
     )
+
+    await user.click(screen.getByRole('button', { name: /story list/i }))
+
     mockStories.forEach((story) => {
       expect(screen.getByText(story.title)).toBeInTheDocument()
     })

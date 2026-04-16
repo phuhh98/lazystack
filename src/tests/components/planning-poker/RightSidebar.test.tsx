@@ -1,26 +1,28 @@
-import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import RightSidebar from '../../../components/planning-poker/RightSidebar'
+import { describe, expect, it } from 'vitest'
+
 import type { PlayerData } from '@/hooks/usePlanningPoker'
+
+import RightSidebar from '../../../components/planning-poker/RightSidebar'
 
 const mockPlayers: PlayerData[] = [
   {
+    handRaised: false,
     id: 'p1',
+    isOnline: true,
+    lastSeen: Date.now(),
     name: 'Alice',
     vote: '5',
     voted: true,
-    isOnline: true,
-    lastSeen: Date.now(),
-    handRaised: false,
   },
   {
+    handRaised: true,
     id: 'p2',
+    isOnline: true,
+    lastSeen: Date.now(),
     name: 'Bob',
     vote: null,
     voted: false,
-    isOnline: true,
-    lastSeen: Date.now(),
-    handRaised: true,
   },
 ]
 
@@ -29,15 +31,15 @@ describe('RightSidebar Component', () => {
     const { container } = render(
       <RightSidebar
         chat={[]}
-        playerId="p1"
-        onSend={() => {}}
-        players={mockPlayers}
-        isModerator={false}
-        timerDuration={0}
-        onToggleHand={() => {}}
-        onLowerHand={() => {}}
-        onSetTimerDuration={() => {}}
         codeWord="test-code"
+        isModerator={false}
+        onLowerHand={() => {}}
+        onSend={() => {}}
+        onSetTimerDuration={() => {}}
+        onToggleHand={() => {}}
+        playerId="p1"
+        players={mockPlayers}
+        timerDuration={0}
       />,
     )
     expect(container.firstChild).toBeInTheDocument()
@@ -47,36 +49,34 @@ describe('RightSidebar Component', () => {
     render(
       <RightSidebar
         chat={[]}
-        playerId="p1"
-        onSend={() => {}}
-        players={mockPlayers}
-        isModerator={false}
-        timerDuration={0}
-        onToggleHand={() => {}}
-        onLowerHand={() => {}}
-        onSetTimerDuration={() => {}}
         codeWord="test-code"
+        isModerator={false}
+        onLowerHand={() => {}}
+        onSend={() => {}}
+        onSetTimerDuration={() => {}}
+        onToggleHand={() => {}}
+        playerId="p1"
+        players={mockPlayers}
+        timerDuration={0}
       />,
     )
     // Should have tab navigation
-    expect(
-      screen.getByRole('button', { name: /chat|message/i }),
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /chat|message/i })).toBeInTheDocument()
   })
 
   it('displays hand raise tab', () => {
     render(
       <RightSidebar
         chat={[]}
-        playerId="p1"
-        onSend={() => {}}
-        players={mockPlayers}
-        isModerator={false}
-        timerDuration={0}
-        onToggleHand={() => {}}
-        onLowerHand={() => {}}
-        onSetTimerDuration={() => {}}
         codeWord="test-code"
+        isModerator={false}
+        onLowerHand={() => {}}
+        onSend={() => {}}
+        onSetTimerDuration={() => {}}
+        onToggleHand={() => {}}
+        playerId="p1"
+        players={mockPlayers}
+        timerDuration={0}
       />,
     )
     expect(screen.getByTitle('Raise hand')).toBeInTheDocument()
@@ -86,15 +86,15 @@ describe('RightSidebar Component', () => {
     render(
       <RightSidebar
         chat={[]}
-        playerId="p1"
-        onSend={() => {}}
-        players={mockPlayers}
-        isModerator={false}
-        timerDuration={0}
-        onToggleHand={() => {}}
-        onLowerHand={() => {}}
-        onSetTimerDuration={() => {}}
         codeWord="test-code-123"
+        isModerator={false}
+        onLowerHand={() => {}}
+        onSend={() => {}}
+        onSetTimerDuration={() => {}}
+        onToggleHand={() => {}}
+        playerId="p1"
+        players={mockPlayers}
+        timerDuration={0}
       />,
     )
     // Code word is used in presets inside the chat panel after opening.
@@ -105,16 +105,16 @@ describe('RightSidebar Component', () => {
     render(
       <RightSidebar
         chat={[]}
-        playerId="p1"
-        onSend={() => {}}
-        players={mockPlayers}
-        isModerator={true}
-        timerDuration={0}
-        onToggleHand={() => {}}
-        onLowerHand={() => {}}
-        onSetTimerDuration={() => {}}
         codeWord="test-code"
+        isModerator={true}
+        onLowerHand={() => {}}
+        onSend={() => {}}
         onSetCodeWord={() => {}}
+        onSetTimerDuration={() => {}}
+        onToggleHand={() => {}}
+        playerId="p1"
+        players={mockPlayers}
+        timerDuration={0}
       />,
     )
     expect(screen.getByTitle('Timer settings')).toBeInTheDocument()

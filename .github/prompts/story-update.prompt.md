@@ -19,6 +19,8 @@ Execution Requirements:
 - If no story file exists, create one using this workspace's Storybook conventions.
 - Place created stories under `src/stories/` (prefer `src/stories/components/...`) and mirror the component area when practical.
 - Follow existing patterns in src/stories/components/\*\* and use import type where needed.
+- Do not import `@storybook/react` directly in stories.
+- This project uses Vite, so use framework package imports such as `@storybook/react-vite` for Storybook typing/utilities.
 - Keep TypeScript fully correct under strict mode (verbatimModuleSyntax, noUnusedLocals, noUnusedParameters).
 - Generate comprehensive stories that cover meaningful component states and edge cases.
 - Exhaust practical cases for the component, including empty, typical, boundary, and interaction-relevant states when applicable.

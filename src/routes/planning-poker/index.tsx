@@ -32,8 +32,8 @@ function PlanningPokerLobby() {
     }
     localStorage.setItem('pp-player-name', name.trim())
     router.navigate({
-      to: '/planning-poker/$roomId',
       params: { roomId: roomCode.toUpperCase().trim() },
+      to: '/planning-poker/$roomId',
     })
   }
 
@@ -42,78 +42,66 @@ function PlanningPokerLobby() {
       <div className="rise-in mx-auto max-w-md">
         <div className="island-shell rounded-[2rem] px-8 py-10">
           <p className="island-kicker mb-2">Planning Poker</p>
-          <h1 className="display-title mb-6 text-3xl font-bold text-[var(--ink)]">
-            Estimate Together
-          </h1>
+          <h1 className="display-title mb-6 text-3xl font-bold text-[var(--ink)]">Estimate Together</h1>
           <p className="mb-8 text-sm text-[var(--ink-muted)]">
             Pick cards in secret, reveal simultaneously. No anchoring bias.
           </p>
 
-          <form onSubmit={handleJoin} className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleJoin}>
             <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="player-name"
-                className="text-sm font-semibold text-[var(--ink)]"
-              >
+              <label className="text-sm font-semibold text-[var(--ink)]" htmlFor="player-name">
                 Your name
               </label>
               <input
+                className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--ink-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgba(79,184,178,0.2)]"
                 id="player-name"
-                type="text"
-                value={name}
+                maxLength={40}
                 onChange={(e) => {
                   setName(e.target.value)
                   setError('')
                 }}
                 placeholder="e.g. Alice"
-                maxLength={40}
-                className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--ink-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgba(79,184,178,0.2)]"
+                type="text"
+                value={name}
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="room-code"
-                className="text-sm font-semibold text-[var(--ink)]"
-              >
+              <label className="text-sm font-semibold text-[var(--ink)]" htmlFor="room-code">
                 Room code
               </label>
               <div className="flex gap-2">
                 <input
+                  className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 font-mono text-sm text-[var(--ink)] outline-none placeholder:text-[var(--ink-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgba(79,184,178,0.2)]"
                   id="room-code"
-                  type="text"
-                  value={roomCode}
+                  maxLength={12}
                   onChange={(e) => {
                     setRoomCode(e.target.value.toUpperCase())
                     setError('')
                   }}
                   placeholder="e.g. XKCD42"
-                  maxLength={12}
-                  className="min-w-0 flex-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 font-mono text-sm text-[var(--ink)] outline-none placeholder:text-[var(--ink-muted)] focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgba(79,184,178,0.2)]"
+                  type="text"
+                  value={roomCode}
                 />
                 <button
-                  type="button"
-                  onClick={() => setRoomCode(generateRoomCode())}
                   className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-xs font-semibold text-[var(--ink-muted)] transition-colors hover:border-[var(--primary-deep)] hover:text-[var(--ink)]"
+                  onClick={() => setRoomCode(generateRoomCode())}
                   title="Generate new code"
+                  type="button"
                 >
                   Generate
                 </button>
               </div>
-              <p className="text-xs text-[var(--ink-muted)]">
-                Share this code with teammates to join the same room.
-              </p>
+              <p className="text-xs text-[var(--ink-muted)]">Share this code with teammates to join the same room.</p>
             </div>
 
             {error && (
-              <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600">
-                {error}
-              </p>
+              <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>
             )}
 
             <button
-              type="submit"
               className="mt-2 rounded-xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--primary-deep)]"
+              type="submit"
             >
               Join Room
             </button>

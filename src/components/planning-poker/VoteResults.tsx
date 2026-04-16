@@ -1,12 +1,13 @@
 import { useState } from 'react'
+
 import type { PlayerData } from '@/hooks/usePlanningPoker'
 
 export interface VoteResultsProps {
-  players: PlayerData[]
-  isModerator: boolean
   isConsensus: boolean
-  onNextStory: (estimateOverride?: string) => void
+  isModerator: boolean
   onEndSession: () => void
+  onNextStory: (estimateOverride?: string) => void
+  players: PlayerData[]
 }
 
 function computeStats(players: PlayerData[]) {
@@ -18,28 +19,23 @@ function computeStats(players: PlayerData[]) {
     tally.set(key, (tally.get(key) ?? 0) + 1)
   }
 
-  const numericVotes = votedPlayers
-    .map((p) => parseInt(p.vote!, 10))
-    .filter((n) => !isNaN(n))
+  const numericVotes = votedPlayers.map((p) => parseInt(p.vote!, 10)).filter((n) => !isNaN(n))
 
-  const average =
-    numericVotes.length > 0
-      ? numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length
-      : null
+  const average = numericVotes.length > 0 ? numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length : null
 
-  return { tally, average }
+  return { average, tally }
 }
 
 const CARD_ORDER = ['1', '2', '3', '5', '8', '13', '21', '?', '☕']
 
 export default function VoteResults({
-  players,
-  isModerator,
   isConsensus,
-  onNextStory,
+  isModerator,
   onEndSession,
+  onNextStory,
+  players,
 }: VoteResultsProps) {
-  const { tally, average } = computeStats(players)
+  const { average, tally } = computeStats(players)
   const [estimateEdit, setEstimateEdit] = useState('')
 
   const sortedEntries = [...tally.entries()].sort((a, b) => {
@@ -83,12 +79,14 @@ export default function VoteResults({
       {sortedEntries.length > 0 ? (
         <div className="mb-3 flex flex-wrap items-end gap-2">
           {sortedEntries.map(([value, count]) => (
-            <div key={value} className="flex flex-col items-center gap-1">
+            <div className="flex flex-col items-center gap-1" key={value}>
               <div className="flex flex-col items-center gap-0.5">
                 <span className="text-xs font-medium text-[var(--ink-muted)]">{count}</span>
                 <div
                   className="w-8 rounded-t-lg bg-[var(--primary)] transition-all duration-500"
-                  style={{ height: `${Math.max(6, (count / maxCount) * 60)}px` }}
+                  style={{
+                    height: `${Math.max(6, (count / maxCount) * 60)}px`,
+                  }}
                 />
               </div>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--primary)] bg-[rgba(204,136,83,0.12)] text-sm font-bold text-[var(--primary)]">
@@ -105,38 +103,41 @@ export default function VoteResults({
         <div className="flex flex-wrap items-center justify-between gap-2">
           {/* Editable estimate — pre-filled with auto-suggestion */}
           <div className="flex items-center gap-1.5">
-            <label className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'var(--ink-muted)' }}>
+            <label className="text-[10px] font-semibold tracking-wide uppercase" style={{ color: 'var(--ink-muted)' }}>
               Estimate
             </label>
             <input
-              type="text"
-              value={estimateEdit}
+              className="w-16 rounded-lg border px-2 py-1 text-xs font-bold outline-none"
+              maxLength={6}
               onChange={(e) => setEstimateEdit(e.target.value)}
               placeholder={suggestedEstimate || '—'}
-              maxLength={6}
-              className="w-16 rounded-lg border px-2 py-1 text-xs font-bold outline-none"
               style={{
-                borderColor: estimateEdit ? 'var(--primary)' : 'var(--border)',
                 background: 'var(--surface)',
+                borderColor: estimateEdit ? 'var(--primary)' : 'var(--border)',
                 color: 'var(--ink)',
               }}
+              type="text"
+              value={estimateEdit}
             />
           </div>
 
           <div className="flex flex-wrap gap-2">
             <button
-              type="button"
-              onClick={onEndSession}
               className="rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors"
-              style={{ borderColor: 'var(--border)', color: 'var(--ink-muted)' }}
+              onClick={onEndSession}
+              style={{
+                borderColor: 'var(--border)',
+                color: 'var(--ink-muted)',
+              }}
+              type="button"
             >
               End Session
             </button>
             <button
-              type="button"
-              onClick={handleNextStory}
               className="rounded-xl px-4 py-1.5 text-xs font-semibold text-white transition-colors"
+              onClick={handleNextStory}
               style={{ background: 'var(--primary)' }}
+              type="button"
             >
               Next Story
             </button>

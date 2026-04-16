@@ -1,14 +1,12 @@
-import { defineConfig, mergeConfig } from 'vitest/config'
-import { playwright } from '@vitest/browser-playwright'
-
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
-
+import { playwright } from '@vitest/browser-playwright'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-
-const dirname = path.dirname(fileURLToPath(import.meta.url))
+import { defineConfig, mergeConfig } from 'vitest/config'
 
 import viteConfig from './vite.config'
+
+const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default mergeConfig(
   viteConfig,
@@ -18,14 +16,14 @@ export default mergeConfig(
         {
           extends: true,
           test: {
-            name: 'unit',
-            include: ['src/tests/**/*.{test,spec}.{ts,tsx}'],
-            environment: 'jsdom',
-            setupFiles: ['./src/tests/setup.ts'],
-            typecheck: { enabled: true },
             browser: {
               enabled: false,
             },
+            environment: 'jsdom',
+            include: ['src/tests/**/*.{test,spec}.{ts,tsx}'],
+            name: 'unit',
+            setupFiles: ['./src/tests/setup.ts'],
+            typecheck: { enabled: true },
           },
         },
         {
@@ -38,18 +36,18 @@ export default mergeConfig(
             }),
           ],
           test: {
-            name: 'storybook',
-            include: [],
             browser: {
               enabled: true,
               headless: true,
-              provider: playwright({}),
               instances: [
                 {
                   browser: 'chromium',
                 },
               ],
+              provider: playwright({}),
             },
+            include: [],
+            name: 'storybook',
             // setupFiles: ['./.storybook/vitest.setup.ts'],
           },
         },

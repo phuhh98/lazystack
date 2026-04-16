@@ -87,7 +87,7 @@
 /* Palette: #122841 · #e2b486 · #cc8853 · #a96130 · #793614             */
 :root {
   --ink: var(--color-dark-teal-900);
-  --ink-muted: var(--color-gray-5 00);
+  --ink-muted: var(--color-gray-500);
   --primary: var(--color-amber-earth-500);
   --primary-deep: var(--color-amber-earth-600);
   --success: var(--color-dark-teal-500);
@@ -172,17 +172,8 @@ body {
   background:
     radial-gradient(1100px 620px at -8% -10%, var(--hero-a), transparent 58%),
     radial-gradient(1050px 620px at 112% -12%, var(--hero-b), transparent 62%),
-    radial-gradient(
-      720px 380px at 50% 115%,
-      rgba(204, 136, 83, 0.07),
-      transparent 68%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--sand) 68%, white) 0%,
-      var(--foam) 44%,
-      var(--bg-base) 100%
-    );
+    radial-gradient(720px 380px at 50% 115%, rgba(204, 136, 83, 0.07), transparent 68%),
+    linear-gradient(180deg, color-mix(in oklab, var(--sand) 68%, white) 0%, var(--foam) 44%, var(--bg-base) 100%);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -196,16 +187,8 @@ body::before {
   z-index: -1;
   opacity: 0.28;
   background:
-    radial-gradient(
-      circle at 20% 15%,
-      rgba(255, 255, 255, 0.8),
-      transparent 34%
-    ),
-    radial-gradient(
-      circle at 78% 26%,
-      rgba(204, 136, 83, 0.18),
-      transparent 42%
-    ),
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.8), transparent 34%),
+    radial-gradient(circle at 78% 26%, rgba(204, 136, 83, 0.18), transparent 42%),
     radial-gradient(circle at 42% 82%, rgba(121, 54, 20, 0.12), transparent 36%);
 }
 
@@ -271,11 +254,7 @@ pre code {
 }
 
 .feature-card {
-  background: linear-gradient(
-    165deg,
-    color-mix(in oklab, var(--surface-strong) 93%, white 7%),
-    var(--surface)
-  );
+  background: linear-gradient(165deg, color-mix(in oklab, var(--surface-strong) 93%, white 7%), var(--surface));
   box-shadow:
     0 1px 0 var(--inset-glint) inset,
     0 18px 34px rgba(121, 54, 20, 0.09),

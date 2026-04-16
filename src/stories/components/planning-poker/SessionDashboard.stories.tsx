@@ -1,19 +1,21 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import SessionDashboard from '../../../components/planning-poker/SessionDashboard'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
 import type { StoryItem } from '@/hooks/usePlanningPoker'
 
+import SessionDashboard from '../../../components/planning-poker/SessionDashboard'
+
 const meta: Meta<typeof SessionDashboard> = {
-  title: 'PlanningPoker/SessionDashboard',
+  args: {
+    isModerator: false,
+    onSetEstimate: () => {},
+    storyList: [],
+  },
   component: SessionDashboard,
   parameters: {
     layout: 'padded',
   },
   tags: ['autodocs'],
-  args: {
-    storyList: [],
-    isModerator: false,
-    onSetEstimate: () => {},
-  },
+  title: 'PlanningPoker/SessionDashboard',
 }
 
 export default meta
@@ -21,55 +23,55 @@ type Story = StoryObj<typeof SessionDashboard>
 
 const completeStories: StoryItem[] = [
   {
+    discussionId: 'disc-1',
+    estimatedVote: '5',
     id: '1',
     title: 'User authentication',
-    estimatedVote: '5',
-    discussionId: 'disc-1',
   },
   {
+    discussionId: 'disc-2',
+    estimatedVote: '8',
     id: '2',
     title: 'Database migration',
-    estimatedVote: '8',
-    discussionId: 'disc-2',
   },
   {
+    discussionId: 'disc-3',
+    estimatedVote: '5',
     id: '3',
     title: 'API endpoint',
-    estimatedVote: '5',
-    discussionId: 'disc-3',
   },
   {
+    discussionId: 'disc-4',
+    estimatedVote: '3',
     id: '4',
     title: 'Button styling',
-    estimatedVote: '3',
-    discussionId: 'disc-4',
   },
   {
+    discussionId: 'disc-5',
+    estimatedVote: '13',
     id: '5',
     title: 'Performance optimization',
-    estimatedVote: '13',
-    discussionId: 'disc-5',
   },
 ]
 
 const mixedStories: StoryItem[] = [
   {
+    discussionId: 'disc-1',
+    estimatedVote: '5',
     id: '1',
     title: 'User authentication',
-    estimatedVote: '5',
-    discussionId: 'disc-1',
   },
   {
+    discussionId: 'disc-2',
+    estimatedVote: null,
     id: '2',
     title: 'Database migration',
-    estimatedVote: null,
-    discussionId: 'disc-2',
   },
   {
+    discussionId: 'disc-3',
+    estimatedVote: '8',
     id: '3',
     title: 'API endpoint',
-    estimatedVote: '8',
-    discussionId: 'disc-3',
   },
 ]
 
@@ -78,8 +80,8 @@ const mixedStories: StoryItem[] = [
  */
 export const Completed: Story = {
   args: {
-    storyList: completeStories,
     isModerator: false,
+    storyList: completeStories,
   },
 }
 
@@ -88,8 +90,8 @@ export const Completed: Story = {
  */
 export const Incomplete: Story = {
   args: {
-    storyList: mixedStories,
     isModerator: false,
+    storyList: mixedStories,
   },
 }
 
@@ -98,8 +100,8 @@ export const Incomplete: Story = {
  */
 export const AsModerator: Story = {
   args: {
-    storyList: completeStories,
     isModerator: true,
+    storyList: completeStories,
   },
 }
 
@@ -108,7 +110,7 @@ export const AsModerator: Story = {
  */
 export const Empty: Story = {
   args: {
-    storyList: [],
     isModerator: false,
+    storyList: [],
   },
 }

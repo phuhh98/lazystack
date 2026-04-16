@@ -1,25 +1,16 @@
-/// <reference types="vitest/config" />
-import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
 import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+/// <reference types="vitest/config" />
+import { defineConfig } from 'vite'
 
-const dirname =
-  typeof __dirname !== 'undefined'
-    ? __dirname
-    : path.dirname(fileURLToPath(import.meta.url))
+const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url))
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 const config = defineConfig({
-  resolve: {
-    alias: {
-      '@': path.resolve(dirname, './src'),
-    },
-    tsconfigPaths: true,
-  },
   plugins: [
     devtools(),
     tailwindcss(),
@@ -33,5 +24,11 @@ const config = defineConfig({
     }),
     viteReact(),
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(dirname, './src'),
+    },
+    tsconfigPaths: true,
+  },
 })
 export default config

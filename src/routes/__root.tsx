@@ -1,28 +1,23 @@
-import {
-  HeadContent,
-  Scripts,
-  createRootRoute,
-  useRouterState,
-} from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { createRootRoute, HeadContent, Scripts, useRouterState } from '@tanstack/react-router'
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+
+import Container from '../components/basic/Container'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
-
-import appCss from '../styles.css?url'
-import Container from '../components/basic/Container'
 import { cn } from '../lib/utils/styles'
+import appCss from '../styles.css?url'
 
 const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`
 
 export const Route = createRootRoute({
   head: () => ({
+    links: [{ href: appCss, rel: 'stylesheet' }],
     meta: [
       { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { content: 'width=device-width, initial-scale=1', name: 'viewport' },
       { title: 'LazyStack' },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
   }),
   shellComponent: RootDocument,
 })
@@ -47,19 +42,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body
         className={cn(
-          'flex flex-col font-content antialiased wrap-anywhere selection:bg-[rgba(204,136,83,0.2)] min-h-screen',
+          'font-content flex min-h-screen flex-col wrap-anywhere antialiased selection:bg-[rgba(204,136,83,0.2)]',
           isGameRoom && 'h-screen',
         )}
       >
         <Header />
-        <Container
-          className={cn(
-            'grow',
-            isGameRoom ? 'overflow-hidden' : 'overflow-y-auto',
-          )}
-        >
-          {children}
-        </Container>
+        <Container className={cn('grow', isGameRoom ? 'overflow-hidden' : 'overflow-y-auto')}>{children}</Container>
         <FooterConditional />
         <TanStackDevtools
           config={{ position: 'bottom-right' }}

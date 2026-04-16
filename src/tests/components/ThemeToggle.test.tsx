@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { beforeEach, describe, expect, it } from 'vitest'
+
 import ThemeToggle from '../../components/ThemeToggle'
 
 describe('ThemeToggle Component', () => {
@@ -11,17 +12,17 @@ describe('ThemeToggle Component', () => {
     document.documentElement.removeAttribute('data-theme')
 
     Object.defineProperty(window, 'matchMedia', {
-      writable: true,
       value: (query: string) => ({
+        addEventListener: () => {},
+        addListener: () => {},
+        dispatchEvent: () => false,
         matches: false,
         media: query,
         onchange: null,
-        addEventListener: () => {},
         removeEventListener: () => {},
-        addListener: () => {},
         removeListener: () => {},
-        dispatchEvent: () => false,
       }),
+      writable: true,
     })
   })
 

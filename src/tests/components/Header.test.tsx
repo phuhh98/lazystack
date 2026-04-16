@@ -1,19 +1,13 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
+
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+
 import Header from '../../components/Header'
 
 vi.mock('@tanstack/react-router', () => ({
-  Link: ({
-    children,
-    to,
-    className,
-  }: {
-    children: ReactNode
-    to: string
-    className?: string
-  }) => (
-    <a href={to} className={className}>
+  Link: ({ children, className, to }: { children: ReactNode; className?: string; to: string }) => (
+    <a className={className} href={to}>
       {children}
     </a>
   ),
@@ -21,17 +15,17 @@ vi.mock('@tanstack/react-router', () => ({
 
 function mockMatchMedia() {
   Object.defineProperty(window, 'matchMedia', {
-    writable: true,
     value: (query: string) => ({
+      addEventListener: () => {},
+      addListener: () => {},
+      dispatchEvent: () => false,
       matches: false,
       media: query,
       onchange: null,
-      addEventListener: () => {},
       removeEventListener: () => {},
-      addListener: () => {},
       removeListener: () => {},
-      dispatchEvent: () => false,
     }),
+    writable: true,
   })
 }
 
@@ -46,9 +40,7 @@ describe('Header Component', () => {
     mockMatchMedia()
     render(<Header />)
     expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: 'Planning Poker' }),
-    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Planning Poker' })).toBeInTheDocument()
   })
 
   it('renders theme toggle button', () => {

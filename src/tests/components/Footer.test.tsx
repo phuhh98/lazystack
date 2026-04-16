@@ -1,14 +1,13 @@
-import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
+
 import Footer from '../../components/Footer'
 
 describe('Footer Component', () => {
   it('renders copyright notice with current year', () => {
     const currentYear = new Date().getFullYear()
     render(<Footer />)
-    expect(
-      screen.getByText(new RegExp(`© ${currentYear} LazyStack`)),
-    ).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`© ${currentYear} LazyStack`))).toBeInTheDocument()
   })
 
   it('renders GitHub link', () => {

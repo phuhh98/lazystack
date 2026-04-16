@@ -1,19 +1,20 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
 import VoteResults from '../../../components/planning-poker/VoteResults'
 
 const meta: Meta<typeof VoteResults> = {
-  title: 'PlanningPoker/VoteResults',
+  args: {
+    isConsensus: false,
+    isModerator: false,
+    onEndSession: () => {},
+    onNextStory: () => {},
+  },
   component: VoteResults,
   parameters: {
     layout: 'padded',
   },
   tags: ['autodocs'],
-  args: {
-    isModerator: false,
-    isConsensus: false,
-    onNextStory: () => {},
-    onEndSession: () => {},
-  },
+  title: 'PlanningPoker/VoteResults',
 }
 
 export default meta
@@ -23,75 +24,75 @@ const ts = Date.now()
 
 const consensusPlayers = [
   {
+    handRaised: false,
     id: 'p1',
+    isOnline: true,
+    lastSeen: ts,
     name: 'Alice',
-    voted: true,
     vote: '5',
-    isOnline: true,
-    lastSeen: ts,
-    handRaised: false,
+    voted: true,
   },
   {
+    handRaised: false,
     id: 'p2',
-    name: 'Bob',
-    voted: true,
-    vote: '5',
     isOnline: true,
     lastSeen: ts,
-    handRaised: false,
+    name: 'Bob',
+    vote: '5',
+    voted: true,
   },
   {
+    handRaised: false,
     id: 'p3',
-    name: 'Carol',
-    voted: true,
-    vote: '5',
     isOnline: true,
     lastSeen: ts,
-    handRaised: false,
+    name: 'Carol',
+    vote: '5',
+    voted: true,
   },
 ]
 
 const splitPlayers = [
   {
+    handRaised: false,
     id: 'p1',
+    isOnline: true,
+    lastSeen: ts,
     name: 'Alice',
-    voted: true,
     vote: '3',
-    isOnline: true,
-    lastSeen: ts,
-    handRaised: false,
+    voted: true,
   },
   {
+    handRaised: false,
     id: 'p2',
+    isOnline: true,
+    lastSeen: ts,
     name: 'Bob',
-    voted: true,
     vote: '8',
-    isOnline: true,
-    lastSeen: ts,
-    handRaised: false,
+    voted: true,
   },
   {
+    handRaised: false,
     id: 'p3',
-    name: 'Carol',
-    voted: true,
-    vote: '5',
     isOnline: true,
     lastSeen: ts,
-    handRaised: false,
+    name: 'Carol',
+    vote: '5',
+    voted: true,
   },
   {
+    handRaised: false,
     id: 'p4',
-    name: 'Dan',
-    voted: true,
-    vote: '8',
     isOnline: false,
     lastSeen: ts - 60000,
-    handRaised: false,
+    name: 'Dan',
+    vote: '8',
+    voted: true,
   },
 ]
 
 export const Consensus: Story = {
-  args: { players: consensusPlayers, isConsensus: true },
+  args: { isConsensus: true, players: consensusPlayers },
 }
 
 export const Split: Story = {
@@ -99,5 +100,5 @@ export const Split: Story = {
 }
 
 export const AsModerator: Story = {
-  args: { players: splitPlayers, isModerator: true },
+  args: { isModerator: true, players: splitPlayers },
 }

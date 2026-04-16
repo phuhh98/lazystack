@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
 import { act, render } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
 import Confetti from '../../../components/planning-poker/Confetti'
 
 afterEach(() => {
@@ -22,12 +23,7 @@ describe('Confetti Component', () => {
   it('has pointer-events-none class', () => {
     const { container } = render(<Confetti />)
     const confettiDiv = container.querySelector('[aria-hidden="true"]')
-    expect(confettiDiv).toHaveClass(
-      'pointer-events-none',
-      'fixed',
-      'inset-0',
-      'z-[999]',
-    )
+    expect(confettiDiv).toHaveClass('pointer-events-none', 'fixed', 'inset-0', 'z-[999]')
   })
 
   it('renders style element with animation', () => {
@@ -39,12 +35,10 @@ describe('Confetti Component', () => {
 
   it('hides after animation completes', () => {
     let scheduled: TimerHandler | undefined
-    const setTimeoutSpy = vi
-      .spyOn(globalThis, 'setTimeout')
-      .mockImplementation((fn) => {
-        scheduled = fn
-        return 1 as unknown as ReturnType<typeof setTimeout>
-      })
+    const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout').mockImplementation((fn) => {
+      scheduled = fn
+      return 1 as unknown as ReturnType<typeof setTimeout>
+    })
 
     const { container } = render(<Confetti />)
     let confettiDiv = container.querySelector('[aria-hidden="true"]')

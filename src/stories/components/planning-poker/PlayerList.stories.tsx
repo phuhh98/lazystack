@@ -1,11 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
 import PlayerList from '../../../components/planning-poker/PlayerList'
 
 const meta: Meta<typeof PlayerList> = {
-  title: 'PlanningPoker/PlayerList',
+  args: {
+    currentPlayerId: 'p1',
+  },
   component: PlayerList,
   parameters: {
-    layout: 'padded',
     backgrounds: {
       default: 'light',
       values: [
@@ -13,11 +15,10 @@ const meta: Meta<typeof PlayerList> = {
         { name: 'dark', value: '#0a1418' },
       ],
     },
+    layout: 'padded',
   },
   tags: ['autodocs'],
-  args: {
-    currentPlayerId: 'p1',
-  },
+  title: 'PlanningPoker/PlayerList',
 }
 
 export default meta
@@ -25,96 +26,95 @@ type Story = StoryObj<typeof meta>
 
 const playersVoting = [
   {
+    handRaised: false,
     id: 'p1',
+    isOnline: true,
+    lastSeen: Date.now(),
     name: 'Alice',
-    voted: true,
     vote: '5',
-    isOnline: true,
-    lastSeen: Date.now(),
-    handRaised: false,
-  },
-  {
-    id: 'p2',
-    name: 'Bob',
-    voted: false,
-    vote: null,
-    isOnline: true,
-    lastSeen: Date.now(),
-    handRaised: false,
-  },
-  {
-    id: 'p3',
-    name: 'Carol',
     voted: true,
-    vote: '8',
-    isOnline: true,
-    lastSeen: Date.now(),
-    handRaised: false,
   },
   {
-    id: 'p4',
-    name: 'Dan',
-    voted: false,
+    handRaised: false,
+    id: 'p2',
+    isOnline: true,
+    lastSeen: Date.now(),
+    name: 'Bob',
     vote: null,
+    voted: false,
+  },
+  {
+    handRaised: false,
+    id: 'p3',
+    isOnline: true,
+    lastSeen: Date.now(),
+    name: 'Carol',
+    vote: '8',
+    voted: true,
+  },
+  {
+    handRaised: false,
+    id: 'p4',
     isOnline: false,
     lastSeen: Date.now() - 60000,
-    handRaised: false,
+    name: 'Dan',
+    vote: null,
+    voted: false,
   },
 ]
 
 const playersRevealed = [
   {
+    handRaised: false,
     id: 'p1',
+    isOnline: true,
+    lastSeen: Date.now(),
     name: 'Alice',
-    voted: true,
     vote: '5',
-    isOnline: true,
-    lastSeen: Date.now(),
-    handRaised: false,
+    voted: true,
   },
   {
+    handRaised: false,
     id: 'p2',
+    isOnline: true,
+    lastSeen: Date.now(),
     name: 'Bob',
-    voted: true,
     vote: '8',
-    isOnline: true,
-    lastSeen: Date.now(),
-    handRaised: false,
+    voted: true,
   },
   {
+    handRaised: false,
     id: 'p3',
-    name: 'Carol',
-    voted: true,
-    vote: '5',
     isOnline: true,
     lastSeen: Date.now(),
-    handRaised: false,
+    name: 'Carol',
+    vote: '5',
+    voted: true,
   },
   {
+    handRaised: false,
     id: 'p4',
-    name: 'Dan',
-    voted: true,
-    vote: '?',
     isOnline: false,
     lastSeen: Date.now() - 60000,
-    handRaised: false,
+    name: 'Dan',
+    vote: '?',
+    voted: true,
   },
 ]
 
 export const Voting: Story = {
-  args: { players: playersVoting, phase: 'voting' },
+  args: { phase: 'voting', players: playersVoting },
   parameters: {
     docs: {
       description: {
-        story:
-          'Voting phase: shows checkmark for voted players, ellipsis for waiting.',
+        story: 'Voting phase: shows checkmark for voted players, ellipsis for waiting.',
       },
     },
   },
 }
 
 export const Revealed: Story = {
-  args: { players: playersRevealed, phase: 'revealed' },
+  args: { phase: 'revealed', players: playersRevealed },
   parameters: {
     docs: {
       description: {
@@ -126,9 +126,9 @@ export const Revealed: Story = {
 
 export const WithCurrentPlayer: Story = {
   args: {
-    players: playersVoting,
-    phase: 'voting',
     currentPlayerId: 'p2',
+    phase: 'voting',
+    players: playersVoting,
   },
   parameters: {
     docs: {
@@ -141,39 +141,39 @@ export const WithCurrentPlayer: Story = {
 
 export const OfflinePlayers: Story = {
   args: {
+    phase: 'voting',
     players: [
       {
+        handRaised: false,
         id: 'p1',
-        name: 'Alice',
-        voted: true,
-        vote: '3',
         isOnline: true,
         lastSeen: Date.now(),
-        handRaised: false,
+        name: 'Alice',
+        vote: '3',
+        voted: true,
       },
       {
+        handRaised: false,
         id: 'p2',
-        name: 'Bob',
-        voted: false,
-        vote: null,
         isOnline: false,
         lastSeen: Date.now() - 60000,
-        handRaised: false,
+        name: 'Bob',
+        vote: null,
+        voted: false,
       },
       {
+        handRaised: false,
         id: 'p3',
-        name: 'Carol',
-        voted: false,
-        vote: null,
         isOnline: false,
         lastSeen: Date.now() - 120000,
-        handRaised: false,
+        name: 'Carol',
+        vote: null,
+        voted: false,
       },
     ],
-    phase: 'voting',
   },
 }
 
 export const Empty: Story = {
-  args: { players: [], phase: 'lobby' },
+  args: { phase: 'lobby', players: [] },
 }

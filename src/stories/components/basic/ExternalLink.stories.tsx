@@ -1,12 +1,36 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
 import ExternalLink from '../../../components/basic/ExternalLink'
 import GithubIcon from '../../../components/brandIcons/GithubIcon'
 
 const meta: Meta<typeof ExternalLink> = {
-  title: 'Basic/ExternalLink',
+  argTypes: {
+    className: {
+      control: 'text',
+      description: 'Additional CSS classes',
+    },
+    href: {
+      control: 'text',
+      description: 'URL to navigate to',
+    },
+    rel: {
+      control: 'text',
+      description: 'Relationship between the current document and the linked document',
+    },
+    target: {
+      control: {
+        options: ['_blank', '_self', '_parent', '_top'],
+        type: 'select',
+      },
+      description: 'Target attribute for the link',
+    },
+    withIcon: {
+      control: 'boolean',
+      description: 'Whether to apply icon styling',
+    },
+  },
   component: ExternalLink,
   parameters: {
-    layout: 'centered',
     backgrounds: {
       default: 'light',
       values: [
@@ -14,34 +38,10 @@ const meta: Meta<typeof ExternalLink> = {
         { name: 'dark', value: '#0a1418' },
       ],
     },
+    layout: 'centered',
   },
   tags: ['autodocs'],
-  argTypes: {
-    href: {
-      control: 'text',
-      description: 'URL to navigate to',
-    },
-    target: {
-      control: {
-        type: 'select',
-        options: ['_blank', '_self', '_parent', '_top'],
-      },
-      description: 'Target attribute for the link',
-    },
-    rel: {
-      control: 'text',
-      description:
-        'Relationship between the current document and the linked document',
-    },
-    withIcon: {
-      control: 'boolean',
-      description: 'Whether to apply icon styling',
-    },
-    className: {
-      control: 'text',
-      description: 'Additional CSS classes',
-    },
-  },
+  title: 'Basic/ExternalLink',
 }
 
 export default meta
@@ -52,9 +52,9 @@ type Story = StoryObj<typeof meta>
  */
 export const Default: Story = {
   args: {
-    href: 'https://example.com',
     children: 'Visit Example',
     className: '',
+    href: 'https://example.com',
   },
 }
 
@@ -63,10 +63,10 @@ export const Default: Story = {
  */
 export const WithIcon: Story = {
   args: {
-    href: 'https://github.com',
     children: <GithubIcon />,
-    withIcon: true,
     className: '',
+    href: 'https://github.com',
+    withIcon: true,
   },
 }
 
@@ -74,28 +74,31 @@ export const WithIcon: Story = {
  * Multiple external links in a row
  */
 export const Multiple: Story = {
+  args: {
+    className: '',
+  },
   render: (args) => (
     <div className="flex gap-4">
-      <ExternalLink href="https://github.com" className={args.className}>
+      <ExternalLink className={args.className} href="https://github.com">
         GitHub
       </ExternalLink>
-      <ExternalLink href="https://twitter.com" className={args.className}>
+      <ExternalLink className={args.className} href="https://twitter.com">
         Twitter
       </ExternalLink>
-      <ExternalLink href="https://linkedin.com" className={args.className}>
+      <ExternalLink className={args.className} href="https://linkedin.com">
         LinkedIn
       </ExternalLink>
     </div>
   ),
-  args: {
-    className: '',
-  },
 }
 
 /**
  * Icon links grouped together
  */
 export const IconGroup: Story = {
+  args: {
+    className: '',
+  },
   render: (args) => (
     <div className="flex gap-2">
       <ExternalLink href="https://github.com" withIcon {...args}>
@@ -106,7 +109,4 @@ export const IconGroup: Story = {
       </ExternalLink>
     </div>
   ),
-  args: {
-    className: '',
-  },
 }

@@ -1,35 +1,6 @@
 import { useEffect, useState } from 'react'
 
-type ThemeMode = 'light' | 'dark' | 'auto'
-
-function getInitialMode(): ThemeMode {
-  if (typeof window === 'undefined') {
-    return 'auto'
-  }
-
-  const stored = window.localStorage.getItem('theme')
-  if (stored === 'light' || stored === 'dark' || stored === 'auto') {
-    return stored
-  }
-
-  return 'auto'
-}
-
-function applyThemeMode(mode: ThemeMode) {
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  const resolved = mode === 'auto' ? (prefersDark ? 'dark' : 'light') : mode
-
-  document.documentElement.classList.remove('light', 'dark')
-  document.documentElement.classList.add(resolved)
-
-  if (mode === 'auto') {
-    document.documentElement.removeAttribute('data-theme')
-  } else {
-    document.documentElement.setAttribute('data-theme', mode)
-  }
-
-  document.documentElement.style.colorScheme = resolved
-}
+type ThemeMode = 'auto' | 'dark' | 'light'
 
 export default function ThemeToggle() {
   const [mode, setMode] = useState<ThemeMode>('auto')
@@ -55,8 +26,7 @@ export default function ThemeToggle() {
   }, [mode])
 
   function toggleMode() {
-    const nextMode: ThemeMode =
-      mode === 'light' ? 'dark' : mode === 'dark' ? 'auto' : 'light'
+    const nextMode: ThemeMode = mode === 'light' ? 'dark' : mode === 'dark' ? 'auto' : 'light'
     setMode(nextMode)
     applyThemeMode(nextMode)
     window.localStorage.setItem('theme', nextMode)
@@ -69,13 +39,42 @@ export default function ThemeToggle() {
 
   return (
     <button
-      type="button"
-      onClick={toggleMode}
       aria-label={label}
-      title={label}
       className="rounded-full border border-[var(--chip-border)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm font-semibold text-[var(--ink)] shadow-[0_8px_22px_rgba(30,90,72,0.08)] transition hover:-translate-y-0.5"
+      onClick={toggleMode}
+      title={label}
+      type="button"
     >
       {mode === 'auto' ? 'Auto' : mode === 'dark' ? 'Dark' : 'Light'}
     </button>
   )
+}
+
+function applyThemeMode(mode: ThemeMode) {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  const resolved = mode === 'auto' ? (prefersDark ? 'dark' : 'light') : mode
+
+  document.documentElement.classList.remove('light', 'dark')
+  document.documentElement.classList.add(resolved)
+
+  if (mode === 'auto') {
+    document.documentElement.removeAttribute('data-theme')
+  } else {
+    document.documentElement.setAttribute('data-theme', mode)
+  }
+
+  document.documentElement.style.colorScheme = resolved
+}
+
+function getInitialMode(): ThemeMode {
+  if (typeof window === 'undefined') {
+    return 'auto'
+  }
+
+  const stored = window.localStorage.getItem('theme')
+  if (stored === 'light' || stored === 'dark' || stored === 'auto') {
+    return stored
+  }
+
+  return 'auto'
 }

@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
+
 import Container from '../../../components/basic/Container'
 
 describe('Container Component', () => {
@@ -15,16 +16,14 @@ describe('Container Component', () => {
   })
 
   it('merges custom className with defaults', () => {
-    const { container } = render(
-      <Container className="py-8">Content</Container>,
-    )
+    const { container } = render(<Container className="py-8">Content</Container>)
     const div = container.querySelector('div')
     expect(div).toHaveClass('container', 'mx-auto', 'px-4', 'py-8')
   })
 
   it('accepts HTML attributes', () => {
     const { container } = render(
-      <Container id="test-container" data-testid="container">
+      <Container data-testid="container" id="test-container">
         Content
       </Container>,
     )

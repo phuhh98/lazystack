@@ -1,13 +1,14 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
 import Container from '../../../components/basic/Container'
 
 const meta: Meta<typeof Container> = {
-  title: 'Basic/Container',
   component: Container,
   parameters: {
     layout: 'fullscreen',
   },
   tags: ['autodocs'],
+  title: 'Basic/Container',
 }
 
 export default meta
@@ -23,8 +24,8 @@ export const Default: Story = {
         style={{
           background: 'var(--surface)',
           border: '1px solid var(--border)',
-          padding: '2rem',
           borderRadius: '0.5rem',
+          padding: '2rem',
           textAlign: 'center',
         }}
       >
@@ -42,16 +43,13 @@ export const WithNestedContent: Story = {
     <Container {...args}>
       <div
         style={{
-          padding: '2rem',
           background: 'var(--surface)',
           borderRadius: '0.5rem',
+          padding: '2rem',
         }}
       >
         <h2 style={{ marginTop: 0 }}>Heading</h2>
-        <p>
-          This is content inside a container. It will be centered and have
-          responsive padding.
-        </p>
+        <p>This is content inside a container. It will be centered and have responsive padding.</p>
       </div>
     </Container>
   ),
@@ -66,8 +64,8 @@ export const WithCustomClass: Story = {
       <div
         style={{
           background: 'var(--surface)',
-          padding: '2rem',
           borderRadius: '0.5rem',
+          padding: '2rem',
         }}
       >
         Container with custom class

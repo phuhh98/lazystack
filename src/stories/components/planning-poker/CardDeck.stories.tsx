@@ -1,14 +1,19 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
 import { useState } from 'react'
+
 import CardDeck from '../../../components/planning-poker/CardDeck'
 
 const CARDS = ['1', '2', '3', '5', '8', '13', '21', '?', '☕']
 
 const meta: Meta<typeof CardDeck> = {
-  title: 'PlanningPoker/CardDeck',
+  args: {
+    cards: CARDS,
+    disabled: false,
+    onSelect: () => {},
+  },
   component: CardDeck,
   parameters: {
-    layout: 'padded',
     backgrounds: {
       default: 'light',
       values: [
@@ -16,13 +21,10 @@ const meta: Meta<typeof CardDeck> = {
         { name: 'dark', value: '#0a1418' },
       ],
     },
+    layout: 'padded',
   },
   tags: ['autodocs'],
-  args: {
-    cards: CARDS,
-    disabled: false,
-    onSelect: () => {},
-  },
+  title: 'PlanningPoker/CardDeck',
 }
 
 export default meta
@@ -37,7 +39,7 @@ export const WithSelection: Story = {
 }
 
 export const Disabled: Story = {
-  args: { selectedCard: '8', disabled: true },
+  args: { disabled: true, selectedCard: '8' },
   parameters: {
     docs: {
       description: {
@@ -49,21 +51,15 @@ export const Disabled: Story = {
 
 export const AllCards: Story = {
   args: { selectedCard: null },
-  render: (args) => {
-    const [selected, setSelected] = useState<string | null>(null)
-    return (
-      <CardDeck
-        {...args}
-        selectedCard={selected}
-        onSelect={(card) => setSelected(card)}
-      />
-    )
-  },
   parameters: {
     docs: {
       description: {
         story: 'Interactive: click cards to select/deselect.',
       },
     },
+  },
+  render: (args) => {
+    const [selected, setSelected] = useState<null | string>(null)
+    return <CardDeck {...args} onSelect={(card) => setSelected(card)} selectedCard={selected} />
   },
 }

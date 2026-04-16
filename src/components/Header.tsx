@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+
 import ThemeToggle from './ThemeToggle'
 
 const NAV_LINKS = [
@@ -12,8 +13,8 @@ export default function Header() {
       <nav className="page-wrap flex flex-wrap items-center gap-x-3 gap-y-2 py-3 sm:py-4">
         <h2 className="m-0 shrink-0 text-base font-semibold tracking-tight">
           <Link
-            to="/"
             className="inline-flex items-center gap-2 rounded-full border border-(--chip-line) bg-(--chip-bg) px-3 py-1.5 text-sm text-[var(--ink)] no-underline shadow-[0_8px_24px_rgba(200,80,30,0.08)] sm:px-4 sm:py-2"
+            to="/"
           >
             <span className="h-2 w-2 rounded-full bg-[linear-gradient(90deg,var(--primary),var(--primary-deep))]" />
             <span className="font-title text-xl">LazyStack</span>
@@ -26,12 +27,7 @@ export default function Header() {
 
         <div className="order-3 flex w-full flex-wrap items-center gap-x-4 gap-y-1 pb-1 text-sm font-semibold sm:order-2 sm:w-auto sm:flex-nowrap sm:pb-0">
           {NAV_LINKS.map((link) => (
-            <Link
-              key={link.label}
-              to={link.to}
-              className="nav-link"
-              activeProps={{ className: 'nav-link is-active' }}
-            >
+            <Link activeProps={{ className: 'nav-link is-active' }} className="nav-link" key={link.label} to={link.to}>
               {link.label}
             </Link>
           ))}

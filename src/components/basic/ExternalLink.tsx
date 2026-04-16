@@ -1,31 +1,24 @@
-import { cn } from '@/lib/utils/styles'
 import type { AnchorHTMLAttributes } from 'react'
 
+import { cn } from '@/lib/utils/styles'
+
 const ExternalLink: React.FC<
-  React.PropsWithChildren &
-    AnchorHTMLAttributes<HTMLAnchorElement> & {
+  AnchorHTMLAttributes<HTMLAnchorElement> &
+    React.PropsWithChildren & {
       withIcon?: boolean
     }
-> = ({
-  target,
-  href,
-  rel,
-  className,
-  children,
-  withIcon = false,
-  ...props
-}) => {
+> = ({ children, className, href, rel, target, withIcon = false, ...props }) => {
   return (
     <a
-      href={href}
-      target={target || '_blank'}
-      rel={rel || 'noopener noreferrer'}
       className={cn(
         withIcon
           ? 'rounded-xl p-2 text-(--sea-ink-soft) transition hover:bg-(--link-bg-hover) hover:text-(--sea-ink)'
           : 'nav-link',
         className ?? '',
       )}
+      href={href}
+      rel={rel || 'noopener noreferrer'}
+      target={target || '_blank'}
       {...props}
     >
       {children}

@@ -1,10 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import {
-  RouterProvider,
-  createMemoryHistory,
-  createRootRoute,
-  createRouter,
-} from '@tanstack/react-router'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
+import { createMemoryHistory, createRootRoute, createRouter, RouterProvider } from '@tanstack/react-router'
+
 import Header from '../../components/Header'
 
 const rootRoute = createRootRoute({
@@ -12,26 +9,26 @@ const rootRoute = createRootRoute({
 })
 
 const router = createRouter({
-  routeTree: rootRoute,
   history: createMemoryHistory(),
+  routeTree: rootRoute,
 })
 
 const meta: Meta<typeof Header> = {
-  title: 'Layout/Header',
   component: Header,
-  parameters: {
-    layout: 'fullscreen',
-  },
-  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <RouterProvider router={router}>
-        <div style={{ minHeight: '400px', background: 'var(--bg-base)' }}>
+        <div style={{ background: 'var(--bg-base)', minHeight: '400px' }}>
           <Story />
         </div>
       </RouterProvider>
     ),
   ],
+  parameters: {
+    layout: 'fullscreen',
+  },
+  tags: ['autodocs'],
+  title: 'Layout/Header',
 }
 
 export default meta

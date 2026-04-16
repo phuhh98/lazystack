@@ -1,21 +1,17 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
 import Footer from '../../components/Footer'
 
 const meta: Meta<typeof Footer> = {
-  title: 'Layout/Footer',
   component: Footer,
-  parameters: {
-    layout: 'fullscreen',
-  },
-  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <div
         style={{
-          minHeight: '400px',
           background: 'var(--bg-base)',
           display: 'flex',
           flexDirection: 'column',
+          minHeight: '400px',
         }}
       >
         <div style={{ flex: 1 }} />
@@ -23,6 +19,11 @@ const meta: Meta<typeof Footer> = {
       </div>
     ),
   ],
+  parameters: {
+    layout: 'fullscreen',
+  },
+  tags: ['autodocs'],
+  title: 'Layout/Footer',
 }
 
 export default meta

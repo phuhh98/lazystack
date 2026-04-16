@@ -1,45 +1,47 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import StoryPresetPanel from '../../../components/planning-poker/StoryPresetPanel'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
 import type { StoryItem } from '@/hooks/usePlanningPoker'
 
+import StoryPresetPanel from '../../../components/planning-poker/StoryPresetPanel'
+
 const meta: Meta<typeof StoryPresetPanel> = {
-  title: 'PlanningPoker/StoryPresetPanel',
+  args: {
+    disabled: false,
+    onAdd: () => {},
+    onRemove: () => {},
+    onReorder: () => {},
+    storyList: [],
+  },
   component: StoryPresetPanel,
   parameters: {
     layout: 'padded',
   },
   tags: ['autodocs'],
-  args: {
-    storyList: [],
-    onAdd: () => {},
-    onRemove: () => {},
-    onReorder: () => {},
-    disabled: false,
-  },
+  title: 'PlanningPoker/StoryPresetPanel',
 }
 
 export default meta
 type Story = StoryObj<typeof StoryPresetPanel>
 
 const sampleStories: StoryItem[] = [
-  { id: '1', title: 'User login form', estimatedVote: null, discussionId: '' },
+  { discussionId: '', estimatedVote: null, id: '1', title: 'User login form' },
   {
+    discussionId: '',
+    estimatedVote: null,
     id: '2',
     title: 'Database schema design',
-    estimatedVote: null,
-    discussionId: '',
   },
   {
+    discussionId: '',
+    estimatedVote: null,
     id: '3',
     title: 'API rate limiting',
-    estimatedVote: null,
-    discussionId: '',
   },
   {
+    discussionId: '',
+    estimatedVote: null,
     id: '4',
     title: 'Email notification system',
-    estimatedVote: null,
-    discussionId: '',
   },
 ]
 
@@ -62,8 +64,8 @@ export const WithStories: Story = {
  */
 export const Disabled: Story = {
   args: {
-    storyList: sampleStories,
     disabled: true,
+    storyList: sampleStories,
   },
 }
 

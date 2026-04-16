@@ -1,90 +1,90 @@
+import type { Array as YArray, Doc as YDoc, Map as YMap } from 'yjs'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { IndexeddbPersistence } from 'y-indexeddb'
+import { WebrtcProvider } from 'y-webrtc'
+import { Doc } from 'yjs'
 
-export type GamePhase = 'lobby' | 'voting' | 'revealed' | 'dashboard'
-
-export interface GameState {
-  phase: GamePhase
-  story: string
-  storyIndex: number
-  moderatorId: string
-  timerDuration: number
-  timerStartedAt: number
-  codeWord: string
-}
-
-export interface PlayerData {
-  id: string
-  name: string
-  vote: string | null
-  voted: boolean
-  isOnline: boolean
+export interface AwarenessState {
   lastSeen: number
-  handRaised: boolean
+  name: string
+  playerId: string
 }
-
-export interface StoryItem {
-  id: string
-  title: string
-  estimatedVote?: string
-}
-
 export interface ChatMessage {
   id: string
-  playerId: string
   name: string
+  playerId: string
   text: string
   ts: number
 }
 
+export type GamePhase = 'dashboard' | 'lobby' | 'revealed' | 'voting'
+
+export interface GameState {
+  codeWord: string
+  moderatorId: string
+  phase: GamePhase
+  story: string
+  storyIndex: number
+  timerDuration: number
+  timerStartedAt: number
+}
+
+export interface PlayerData {
+  handRaised: boolean
+  id: string
+  isOnline: boolean
+  lastSeen: number
+  name: string
+  vote: null | string
+  voted: boolean
+}
+
+export interface StoryItem {
+  estimatedVote?: string
+  id: string
+  title: string
+}
+
 export interface UsePlanningPokerReturn {
-  playerId: string
-  isModerator: boolean
+  addStory: (title: string) => void
   canClaimModerator: boolean
+  castVote: (card: string) => void
+  chat: ChatMessage[]
+  claimModerator: () => void
+  clearStorySelection: () => void
+  endSession: () => void
   gameState: GameState
-  players: PlayerData[]
-  myVote: string | null
   isConnected: boolean
   isConsensus: boolean
-  timerRemaining: number | null
-  castVote: (card: string) => void
-  startVoting: (story: string) => void
-  selectStory: (storyId: string, title: string) => void
-  clearStorySelection: () => void
-  revealVotes: () => void
-  nextStory: (estimateOverride?: string) => void
-  claimModerator: () => void
-  storyList: StoryItem[]
-  addStory: (title: string) => void
-  removeStory: (id: string) => void
-  reorderStory: (id: string, dir: 'up' | 'down') => void
-  moveStory: (fromId: string, toId: string) => void
-  endSession: () => void
-  setStoryEstimate: (storyId: string, vote: string) => void
-  chat: ChatMessage[]
-  sendMessage: (text: string) => void
-  toggleHand: () => void
+  isModerator: boolean
   lowerHand: (id: string) => void
+  moveStory: (fromId: string, toId: string) => void
+  myVote: null | string
+  nextStory: (estimateOverride?: string) => void
+  playerId: string
+  players: PlayerData[]
+  removeStory: (id: string) => void
+  reorderStory: (id: string, dir: 'down' | 'up') => void
+  revealVotes: () => void
+  selectStory: (storyId: string, title: string) => void
+  sendMessage: (text: string) => void
+  setCodeWord: (word: string) => void
+  setStoryEstimate: (storyId: string, vote: string) => void
   setTimerDuration: (seconds: number) => void
   startTimer: () => void
+  startVoting: (story: string) => void
   stopTimer: () => void
-  setCodeWord: (word: string) => void
+  storyList: StoryItem[]
+  timerRemaining: null | number
+  toggleHand: () => void
 }
 
 interface PlayerRecord {
-  name: string
-  vote: string | null
-  voted: boolean
   handRaised: boolean
-}
-
-function getSignalingUrls(): string[] {
-  const envUrls = import.meta.env.VITE_SIGNALING_URLS as string | undefined
-  if (envUrls) return envUrls.split(',').map((s) => s.trim())
-  if (import.meta.env.DEV) return ['ws://localhost:4444']
-  return [
-    'wss://y-webrtc-signaling-eu.fly.dev',
-    'wss://y-webrtc-signaling-us.fly.dev',
-  ]
+  name: string
+  vote: null | string
+  voted: boolean
 }
 
 function getOrCreatePlayerId(): string {
@@ -95,37 +95,21 @@ function getOrCreatePlayerId(): string {
   return id
 }
 
+function getSignalingUrls(): string[] {
+  const envUrls = import.meta.env.VITE_SIGNALING_URLS as string | undefined
+  if (envUrls) return envUrls.split(',').map((s) => s.trim())
+  if (import.meta.env.DEV) return ['ws://localhost:4444']
+  return ['wss://y-webrtc-signaling-eu.fly.dev', 'wss://y-webrtc-signaling-us.fly.dev']
+}
+
 const DEFAULT_GAME_STATE: GameState = {
+  codeWord: '',
+  moderatorId: '',
   phase: 'lobby',
   story: '',
   storyIndex: 0,
-  moderatorId: '',
   timerDuration: 0,
   timerStartedAt: 0,
-  codeWord: '',
-}
-
-function computeAutoVote(players: PlayerData[]): string {
-  const numeric = players
-    .filter((p) => p.isOnline && p.voted && p.vote !== null && p.vote !== '?' && p.vote !== '☕')
-    .map((p) => p.vote as string)
-
-  if (numeric.length === 0) return '?'
-
-  const counts = new Map<string, number>()
-  for (const v of numeric) counts.set(v, (counts.get(v) ?? 0) + 1)
-
-  let maxCount = 0
-  for (const c of counts.values()) if (c > maxCount) maxCount = c
-
-  const tied = [...counts.entries()]
-    .filter(([, c]) => c === maxCount)
-    .map(([v]) => v)
-
-  if (tied.length === 1) return tied[0]
-
-  // Tie: return the highest numeric value
-  return tied.sort((a, b) => Number(b) - Number(a))[0]
 }
 
 export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
@@ -141,12 +125,12 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
   const [isConnected, setIsConnected] = useState(false)
   const [now, setNow] = useState(Date.now)
 
-  const ydocRef = useRef<import('yjs').Doc | null>(null)
-  const gameMapRef = useRef<import('yjs').Map<string | number> | null>(null)
-  const playersMapRef = useRef<import('yjs').Map<PlayerRecord> | null>(null)
-  const storyListRef = useRef<import('yjs').Array<StoryItem> | null>(null)
-  const chatArrayRef = useRef<import('yjs').Array<ChatMessage> | null>(null)
-  const providerRef = useRef<import('y-webrtc').WebrtcProvider | null>(null)
+  const ydocRef = useRef<null | YDoc>(null)
+  const gameMapRef = useRef<null | YMap<number | string>>(null)
+  const playersMapRef = useRef<null | YMap<PlayerRecord>>(null)
+  const storyListRef = useRef<null | YArray<StoryItem>>(null)
+  const chatArrayRef = useRef<null | YArray<ChatMessage>>(null)
+  const providerRef = useRef<null | WebrtcProvider>(null)
   const playerNameRef = useRef<string>('Anonymous')
 
   useEffect(() => {
@@ -157,27 +141,23 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
   useEffect(() => {
     if (!playerId) return
 
-    let mounted = true
+    const lifecycle = { disposed: false }
     let cleanup: (() => void) | undefined
 
     async function init() {
-      const { Doc } = await import('yjs')
-      const { WebrtcProvider } = await import('y-webrtc')
-      const { IndexeddbPersistence } = await import('y-indexeddb')
-
       const ydoc = new Doc()
 
       // Load persisted state first — restores local room history for reconnects
       const idbProvider = new IndexeddbPersistence(`pp-room-${roomId}`, ydoc)
       await idbProvider.whenSynced
 
-      if (!mounted) return
+      if (lifecycle.disposed) return
 
       const provider = new WebrtcProvider(roomId, ydoc, {
         signaling: getSignalingUrls(),
       })
 
-      const gameMap = ydoc.getMap<string | number>('game')
+      const gameMap = ydoc.getMap<number | string>('game')
       const playersMap = ydoc.getMap<PlayerRecord>('players')
       const storyListArray = ydoc.getArray<StoryItem>('storyList')
       const chatArray = ydoc.getArray<ChatMessage>('chat')
@@ -185,7 +165,7 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
       playerNameRef.current = name
 
       // Broadcast presence immediately so existing peers see us
-      provider.awareness.setLocalState({ playerId, name, lastSeen: Date.now() })
+      provider.awareness.setLocalState({ lastSeen: Date.now(), name, playerId })
 
       // Register the `synced` listener SYNCHRONOUSLY right after provider creation —
       // before any further await. BroadcastChannel sync (same browser) fires within
@@ -204,13 +184,13 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
       })
 
       function buildPlayers(): PlayerData[] {
-        const onlineStates = new Map<string, { name: string; lastSeen: number }>()
-        provider.awareness.getStates().forEach((state) => {
-          const pid = state.playerId as string | undefined
+        const onlineStates = new Map<string, Omit<AwarenessState, 'playerId'>>()
+        ;(provider.awareness.getStates() as Map<number, Partial<AwarenessState>>).forEach((state) => {
+          const pid = state.playerId
           if (pid) {
             onlineStates.set(pid, {
-              name: (state.name as string) ?? 'Unknown',
-              lastSeen: (state.lastSeen as number) ?? Date.now(),
+              lastSeen: state.lastSeen ? state.lastSeen : Date.now(),
+              name: state.name ? state.name : 'Unknown',
             })
           }
         })
@@ -222,28 +202,28 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
         playersMap.forEach((record, id) => {
           const presence = onlineStates.get(id)
           list.push({
+            handRaised: !!record.handRaised,
             id,
+            isOnline: !!presence,
+            lastSeen: presence?.lastSeen ?? 0,
             name: record.name,
             vote: record.vote,
             voted: record.voted,
-            isOnline: !!presence,
-            lastSeen: presence?.lastSeen ?? 0,
-            handRaised: record.handRaised ?? false,
           })
           seenIds.add(id)
         })
 
         // Awareness-only: connected but Yjs map not yet received (pre-sync window)
-        onlineStates.forEach(({ name: aName, lastSeen }, pid) => {
+        onlineStates.forEach(({ lastSeen, name: aName }, pid) => {
           if (!seenIds.has(pid)) {
             list.push({
+              handRaised: false,
               id: pid,
+              isOnline: true,
+              lastSeen,
               name: aName,
               vote: null,
               voted: false,
-              isOnline: true,
-              lastSeen,
-              handRaised: false,
             })
           }
         })
@@ -252,30 +232,30 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
       }
 
       function syncGameState() {
-        if (!mounted) return
+        if (lifecycle.disposed) return
         setGameState({
-          phase: (gameMap.get('phase') as GamePhase) ?? 'lobby',
-          story: (gameMap.get('story') as string) ?? '',
-          storyIndex: (gameMap.get('storyIndex') as number) ?? 0,
-          moderatorId: (gameMap.get('moderatorId') as string) ?? '',
-          timerDuration: (gameMap.get('timerDuration') as number) ?? 0,
-          timerStartedAt: (gameMap.get('timerStartedAt') as number) ?? 0,
-          codeWord: (gameMap.get('codeWord') as string) ?? '',
+          codeWord: gameMap.has('codeWord') ? (gameMap.get('codeWord') as string) : '',
+          moderatorId: gameMap.has('moderatorId') ? (gameMap.get('moderatorId') as string) : '',
+          phase: gameMap.has('phase') ? (gameMap.get('phase') as GamePhase) : 'lobby',
+          story: gameMap.has('story') ? (gameMap.get('story') as string) : '',
+          storyIndex: gameMap.has('storyIndex') ? (gameMap.get('storyIndex') as number) : 0,
+          timerDuration: gameMap.has('timerDuration') ? (gameMap.get('timerDuration') as number) : 0,
+          timerStartedAt: gameMap.has('timerStartedAt') ? (gameMap.get('timerStartedAt') as number) : 0,
         })
       }
 
       function syncPlayers() {
-        if (!mounted) return
+        if (lifecycle.disposed) return
         setPlayers(buildPlayers())
       }
 
       function syncStoryList() {
-        if (!mounted) return
+        if (lifecycle.disposed) return
         setStoryList(storyListArray.toArray())
       }
 
       function syncChat() {
-        if (!mounted) return
+        if (lifecycle.disposed) return
         const all = chatArray.toArray()
         setChat(all.slice(-100))
       }
@@ -293,24 +273,29 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
       syncStoryList()
       syncChat()
 
-      if (mounted) {
-        setIsConnected(true)
-        ydocRef.current = ydoc
-        gameMapRef.current = gameMap as import('yjs').Map<string | number>
-        playersMapRef.current = playersMap as import('yjs').Map<PlayerRecord>
-        storyListRef.current = storyListArray as import('yjs').Array<StoryItem>
-        chatArrayRef.current = chatArray as import('yjs').Array<ChatMessage>
-        providerRef.current = provider
-      }
+      setIsConnected(true)
+      ydocRef.current = ydoc
+      gameMapRef.current = gameMap
+      playersMapRef.current = playersMap
+      storyListRef.current = storyListArray
+      chatArrayRef.current = chatArray
+      providerRef.current = provider
 
       // Now await peer sync (or timeout) before writing defaults.
       await syncedPromise
 
-      if (!mounted) return
+      // Only the first peer to write to the Yjs document becomes the "initializer" that sets default values.
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (lifecycle.disposed) return
 
       ydoc.transact(() => {
         if (!playersMap.has(playerId)) {
-          playersMap.set(playerId, { name, vote: null, voted: false, handRaised: false })
+          playersMap.set(playerId, {
+            handRaised: false,
+            name,
+            vote: null,
+            voted: false,
+          })
         }
         if (!gameMap.has('moderatorId')) gameMap.set('moderatorId', playerId)
         if (!gameMap.has('phase')) gameMap.set('phase', 'lobby')
@@ -340,7 +325,7 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
     init()
 
     return () => {
-      mounted = false
+      lifecycle.disposed = true
       cleanup?.()
     }
   }, [roomId, playerId])
@@ -364,7 +349,7 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
     ydoc.transact(() => {
       gm.set('story', story)
       gm.set('phase', 'voting')
-      gm.set('timerStartedAt', 0)  // timer must be started manually
+      gm.set('timerStartedAt', 0) // timer must be started manually
       pm.forEach((record, id) => {
         pm.set(id, { ...record, vote: null, voted: false })
       })
@@ -427,14 +412,14 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
     if (!gm || !pm || !ydoc) return
 
     // Compute auto vote from current players state
-    const currentPlayers = [...(pm.entries())].map(([id, record]) => ({
+    const currentPlayers = [...pm.entries()].map(([id, record]) => ({
+      handRaised: !!record.handRaised,
       id,
+      isOnline: true,
+      lastSeen: 0,
       name: record.name,
       vote: record.vote,
       voted: record.voted,
-      isOnline: true,
-      lastSeen: 0,
-      handRaised: record.handRaised ?? false,
     }))
     const autoVote = estimateOverride?.trim() || computeAutoVote(currentPlayers)
 
@@ -442,12 +427,10 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
       // Save estimate to current story in storyList if it exists
       if (sl && sl.length > 0) {
         const currentStoryTitle = gm.get('story') as string
-        const currentIndex = gm.get('storyIndex') as number
+        const currentIndex = gm.has('storyIndex') ? (gm.get('storyIndex') as number) : 0
         // Find the story in storyList that matches current voting story
         const storyItems = sl.toArray()
-        const targetIdx = storyItems.findIndex(
-          (s) => s.title === currentStoryTitle && !s.estimatedVote,
-        )
+        const targetIdx = storyItems.findIndex((s) => s.title === currentStoryTitle && !s.estimatedVote)
         if (targetIdx !== -1) {
           const updated = { ...storyItems[targetIdx], estimatedVote: autoVote }
           sl.delete(targetIdx, 1)
@@ -461,7 +444,7 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
           // Start voting on next story
           gm.set('story', updatedItems[nextIdx].title)
           gm.set('phase', 'voting')
-          gm.set('storyIndex', (currentIndex ?? 0) + 1)
+          gm.set('storyIndex', currentIndex + 1)
           gm.set('timerStartedAt', 0)
           pm.forEach((record, id) => {
             pm.set(id, { ...record, vote: null, voted: false })
@@ -476,7 +459,7 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
 
       // Free-form mode: just go to next story
       gm.set('phase', 'voting')
-      gm.set('storyIndex', ((gm.get('storyIndex') as number) ?? 0) + 1)
+      gm.set('storyIndex', (gm.has('storyIndex') ? (gm.get('storyIndex') as number) : 0) + 1)
       gm.set('story', '')
       gm.set('timerStartedAt', 0)
       pm.forEach((record, id) => {
@@ -504,7 +487,7 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
     if (idx !== -1) sl.delete(idx, 1)
   }, [])
 
-  const reorderStory = useCallback((id: string, dir: 'up' | 'down') => {
+  const reorderStory = useCallback((id: string, dir: 'down' | 'up') => {
     const sl = storyListRef.current
     const ydoc = ydocRef.current
     if (!sl || !ydoc) return
@@ -558,8 +541,8 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
       ca.push([
         {
           id: crypto.randomUUID(),
-          playerId,
           name: playerNameRef.current,
+          playerId,
           text: text.trim(),
           ts: Date.now(),
         },
@@ -629,36 +612,57 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
   }, [timerRemaining, gameState.phase, revealVotes])
 
   return {
-    playerId,
-    isModerator,
+    addStory,
     canClaimModerator,
+    castVote,
+    chat,
+    claimModerator,
+    clearStorySelection,
+    endSession,
     gameState,
-    players,
-    myVote,
     isConnected,
     isConsensus,
-    timerRemaining,
-    castVote,
-    startVoting,
-    selectStory,
-    clearStorySelection,
-    revealVotes,
+    isModerator,
+    lowerHand,
+    moveStory,
+    myVote,
     nextStory,
-    claimModerator,
-    storyList,
-    addStory,
+    playerId,
+    players,
     removeStory,
     reorderStory,
-    moveStory,
-    endSession,
-    setStoryEstimate,
-    chat,
+    revealVotes,
+    selectStory,
     sendMessage,
-    toggleHand,
-    lowerHand,
+    setCodeWord,
+    setStoryEstimate,
     setTimerDuration,
     startTimer,
+    startVoting,
     stopTimer,
-    setCodeWord,
+    storyList,
+    timerRemaining,
+    toggleHand,
   }
+}
+
+function computeAutoVote(players: PlayerData[]): string {
+  const numeric = players
+    .filter((p) => p.isOnline && p.voted && p.vote !== null && p.vote !== '?' && p.vote !== '☕')
+    .map((p) => p.vote as string)
+
+  if (numeric.length === 0) return '?'
+
+  const counts = new Map<string, number>()
+  for (const v of numeric) counts.set(v, (counts.get(v) ?? 0) + 1)
+
+  let maxCount = 0
+  for (const c of counts.values()) if (c > maxCount) maxCount = c
+
+  const tied = [...counts.entries()].filter(([, c]) => c === maxCount).map(([v]) => v)
+
+  if (tied.length === 1) return tied[0]
+
+  // Tie: return the highest numeric value
+  return tied.sort((a, b) => Number(b) - Number(a))[0]
 }

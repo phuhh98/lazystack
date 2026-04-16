@@ -16,10 +16,11 @@ description: 'Use when working on Blind Poker realtime behavior, component bound
 - Keep planning-poker UI components presentational when possible; pass shared state from route or hook boundaries.
 - Do not hand-edit generated router output in `src/routeTree.gen.ts`.
 
-## Realtime And SSR Safety
+## Realtime Init (SPA)
 
-- Never initialize browser-only realtime dependencies during SSR.
-- For `yjs`, `y-webrtc`, and `y-indexeddb`, use dynamic import inside `useEffect` with a `window` guard.
+- This project is built as an SPA for planning-poker behavior; prefer explicit top-level imports for realtime dependencies.
+- For `yjs`, `y-webrtc`, and `y-indexeddb`, use regular module imports instead of dynamic import.
+- Keep realtime initialization side effects inside `useEffect` and preserve browser-only guards where needed.
 - For local collaboration testing, run `npm run serve:signaling` and confirm `VITE_SIGNALING_URLS` behavior in `.env.example`.
 
 ## Game Domain Conventions

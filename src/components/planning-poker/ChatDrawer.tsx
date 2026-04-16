@@ -1,6 +1,7 @@
 import { Drawer } from '@base-ui/react'
 import { MessageSquare, Send, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+
 import type { ChatMessage } from '@/hooks/usePlanningPoker'
 
 const PRESETS = [
@@ -8,18 +9,18 @@ const PRESETS = [
   '👍 Looks good',
   '🤔 Need more info',
   '☕ Coffee break!',
-  '⏰ Let\'s move on',
+  "⏰ Let's move on",
   '🎉 Great estimate!',
   '🙏 Thanks everyone!',
 ]
 
 interface ChatDrawerProps {
   chat: ChatMessage[]
-  playerId: string
   onSend: (text: string) => void
+  playerId: string
 }
 
-export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) {
+export default function ChatDrawer({ chat, onSend, playerId }: ChatDrawerProps) {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const [lastReadIndex, setLastReadIndex] = useState(0)
@@ -52,10 +53,10 @@ export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) 
   }
 
   return (
-    <Drawer.Root open={open} onOpenChange={setOpen}>
+    <Drawer.Root onOpenChange={setOpen} open={open}>
       {/* Trigger button */}
       <Drawer.Trigger
-        className="fixed bottom-6 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-colors"
+        className="fixed right-4 bottom-6 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-colors"
         style={{
           background: 'var(--primary)',
           color: 'white',
@@ -65,7 +66,7 @@ export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) 
         <MessageSquare size={20} />
         {unread > 0 && (
           <span
-            className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold text-white"
+            className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold text-white"
             style={{ background: 'var(--success)' }}
           >
             {unread > 9 ? '9+' : unread}
@@ -76,10 +77,10 @@ export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) 
       <Drawer.Portal>
         <Drawer.Backdrop
           className="fixed inset-0 z-[150]"
-          style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(2px)' }}
+          style={{ backdropFilter: 'blur(2px)', background: 'rgba(0,0,0,0.3)' }}
         />
         <Drawer.Popup
-          className="fixed bottom-0 left-0 right-0 z-[200] flex max-h-[70vh] flex-col rounded-t-3xl"
+          className="fixed right-0 bottom-0 left-0 z-[200] flex max-h-[70vh] flex-col rounded-t-3xl"
           style={{
             background: 'var(--surface-strong)',
             borderTop: '1px solid var(--border)',
@@ -87,10 +88,7 @@ export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) 
           }}
         >
           {/* Handle */}
-          <div
-            className="mx-auto mt-3 h-1.5 w-10 rounded-full"
-            style={{ background: 'var(--border)' }}
-          />
+          <div className="mx-auto mt-3 h-1.5 w-10 rounded-full" style={{ background: 'var(--border)' }} />
 
           {/* Header */}
           <div
@@ -98,10 +96,7 @@ export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) 
             style={{ borderColor: 'var(--border)' }}
           >
             <p className="island-kicker">Chat</p>
-            <Drawer.Close
-              className="rounded-xl p-1.5 transition-colors"
-              style={{ color: 'var(--ink-muted)' }}
-            >
+            <Drawer.Close className="rounded-xl p-1.5 transition-colors" style={{ color: 'var(--ink-muted)' }}>
               <X size={16} />
             </Drawer.Close>
           </div>
@@ -109,10 +104,7 @@ export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-3">
             {chat.length === 0 ? (
-              <p
-                className="py-4 text-center text-sm"
-                style={{ color: 'var(--ink-muted)' }}
-              >
+              <p className="py-4 text-center text-sm" style={{ color: 'var(--ink-muted)' }}>
                 No messages yet. Say hello!
               </p>
             ) : (
@@ -120,10 +112,7 @@ export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) 
                 {chat.map((msg) => {
                   const isSelf = msg.playerId === playerId
                   return (
-                    <div
-                      key={msg.id}
-                      className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}
-                    >
+                    <div className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`} key={msg.id}>
                       <span className="mb-0.5 text-xs" style={{ color: 'var(--ink-muted)' }}>
                         {msg.name}
                       </span>
@@ -131,8 +120,8 @@ export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) 
                         className="max-w-[75%] rounded-2xl px-3 py-2 text-sm"
                         style={{
                           background: isSelf ? 'var(--primary)' : 'var(--surface)',
-                          color: isSelf ? 'white' : 'var(--ink)',
                           border: isSelf ? 'none' : '1px solid var(--border)',
+                          color: isSelf ? 'white' : 'var(--ink)',
                         }}
                       >
                         {msg.text}
@@ -146,21 +135,18 @@ export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) 
           </div>
 
           {/* Presets */}
-          <div
-            className="flex flex-wrap gap-1.5 px-4 pt-2"
-            style={{ borderTop: '1px solid var(--border)' }}
-          >
+          <div className="flex flex-wrap gap-1.5 px-4 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
             {PRESETS.map((preset) => (
               <button
-                key={preset}
-                type="button"
-                onClick={() => handleSend(preset)}
                 className="rounded-full border px-2.5 py-1 text-xs transition-colors"
+                key={preset}
+                onClick={() => handleSend(preset)}
                 style={{
-                  borderColor: 'var(--chip-border)',
                   background: 'var(--chip-bg)',
+                  borderColor: 'var(--chip-border)',
                   color: 'var(--ink)',
                 }}
+                type="button"
               >
                 {preset}
               </button>
@@ -168,24 +154,24 @@ export default function ChatDrawer({ chat, playerId, onSend }: ChatDrawerProps) 
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSubmit} className="flex gap-2 px-4 pb-6 pt-2">
+          <form className="flex gap-2 px-4 pt-2 pb-6" onSubmit={handleSubmit}>
             <input
-              type="text"
-              value={input}
+              className="min-w-0 flex-1 rounded-xl border px-3 py-2 text-sm outline-none"
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type a message…"
-              className="min-w-0 flex-1 rounded-xl border px-3 py-2 text-sm outline-none"
               style={{
-                borderColor: 'var(--border)',
                 background: 'var(--surface)',
+                borderColor: 'var(--border)',
                 color: 'var(--ink)',
               }}
+              type="text"
+              value={input}
             />
             <button
-              type="submit"
-              disabled={!input.trim()}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors disabled:opacity-40"
+              disabled={!input.trim()}
               style={{ background: 'var(--primary)', color: 'white' }}
+              type="submit"
             >
               <Send size={15} />
             </button>

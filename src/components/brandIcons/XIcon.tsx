@@ -1,4 +1,6 @@
-import { Icon, type IconNode, type LucideProps } from 'lucide-react'
+import type { IconNode, LucideProps } from 'lucide-react'
+
+import { Icon } from 'lucide-react'
 
 const XIcon: React.FC<LucideProps> = (props) => {
   const customIcon: IconNode = [
@@ -11,12 +13,12 @@ const XIcon: React.FC<LucideProps> = (props) => {
   ]
   return (
     <Icon
-      iconNode={customIcon}
       aria-label="X Icon"
-      viewBox="0 0 16 16"
-      size={24}
       fill="currentColor"
+      iconNode={customIcon}
+      size={24}
       stroke="none"
+      viewBox="0 0 16 16"
       {...props}
     />
   )

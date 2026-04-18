@@ -40,14 +40,18 @@ function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body
-        className={cn(
-          'font-content flex min-h-dvh flex-col wrap-anywhere antialiased selection:bg-[rgba(204,136,83,0.2)]',
-          isGameRoom && 'h-dvh',
-        )}
-      >
+      <body className="min-h-100vh w-100vw bg-bg-base dark:bg-dark-teal-900 flex flex-col">
         <Header />
-        <Content className={cn('grow', isGameRoom ? 'overflow-hidden' : 'overflow-y-auto')}>{children}</Content>
+        <Content
+          className={cn(
+            'dark:bg-dark-teal-600/10 bg-amber-200/10',
+            'shadow-dark-teal-900/20 shadow-xl dark:shadow-amber-300/20',
+            'grow',
+            isGameRoom ? 'overflow-hidden' : 'overflow-y-auto',
+          )}
+        >
+          {children}
+        </Content>
         <FooterConditional />
         <TanStackDevtools
           config={{ position: 'bottom-right' }}

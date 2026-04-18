@@ -20,6 +20,7 @@ description: 'Use when implementing or refactoring TypeScript/React code. Covers
 - Keep `src/components/COMPONENT_LOOKUP.md` concise: minimal but sufficient information for fast decision-making.
 - For generic-ready components, prefer function declaration style like `function ComponentName(props: Props)`.
 - Prefer declaration patterns that can be extended to `function ComponentName<T>(props: Props<T>)` without changing call sites.
+- For custom components and primitives, default to `forwardRef` support unless there is a clear reason not to expose refs.
 - For generic components, avoid domain-specific hooks where possible.
 - For use-case-specific components, using or creating focused hooks is allowed when it improves separation of concerns.
 - Reuse `@base-ui/react` primitives before introducing custom interaction primitives.

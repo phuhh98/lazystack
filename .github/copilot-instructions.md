@@ -63,6 +63,7 @@
 
 ## Response Format Preferences
 
-- When the user asks to perform a task, present results as bullet lists only.
+- When the user asks to perform a task, present results as lists and use multi-level lists when it improves clarity.
+- Keep list outputs short and easy to scan.
 - Avoid extra filler words before or after the result list.
 - If giving recommendations, keep them short and efficient for decision-making.

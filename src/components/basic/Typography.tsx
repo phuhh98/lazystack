@@ -1,4 +1,6 @@
-import type { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react'
+import type { ComponentPropsWithoutRef, ElementType, ReactElement, ReactNode, Ref } from 'react'
+
+import { createElement, forwardRef } from 'react'
 
 import { cn } from '@/lib/utils/styles'
 
@@ -19,6 +21,10 @@ const DEFAULT_TYPOGRAPHY_CLASS_BY_TAG = {
   strong: 'font-content text-base leading-7 text-ink font-semibold',
 } as const
 
+type TypographyComponent = <T extends ElementType = 'p'>(
+  props: TypographyProps<T> & { ref?: Ref<HTMLElement> },
+) => null | ReactElement
+
 type TypographyProps<T extends ElementType = 'p'> = Omit<
   ComponentPropsWithoutRef<T>,
   'as' | 'children' | 'className'
@@ -34,16 +40,34 @@ function isTypographyTag(value: string): value is TypographyTag {
   return value in DEFAULT_TYPOGRAPHY_CLASS_BY_TAG
 }
 
-function Typography<T extends ElementType = 'p'>({ as, children, className, ...restProps }: TypographyProps<T>) {
+const Typography = forwardRef<HTMLElement, TypographyProps<ElementType>>(function Typography(
+  { as, children, className, ...restProps },
+  ref,
+) {
   const Component = as ?? 'p'
   const renderedTag: TypographyTag = typeof as === 'string' && isTypographyTag(as) ? as : 'p'
   const defaultClassName = DEFAULT_TYPOGRAPHY_CLASS_BY_TAG[renderedTag]
 
-  return (
-    <Component {...restProps} className={cn(defaultClassName, className)}>
-      {children}
-    </Component>
+  if (typeof Component === 'string') {
+    return createElement(
+      Component,
+      {
+        ...restProps,
+        className: cn(defaultClassName, className),
+        ref: ref as Ref<HTMLElement>,
+      },
+      children,
+    )
+  }
+
+  return createElement(
+    Component,
+    {
+      ...restProps,
+      className: cn(defaultClassName, className),
+    },
+    children,
   )
-}
+}) as TypographyComponent
 
 export default Typography

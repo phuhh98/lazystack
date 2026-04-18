@@ -1,4 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { ComponentProps } from 'react'
+
+import { useEffect, useRef } from 'react'
 
 import type { ChatMessage, PlayerData } from '@/hooks/usePlanningPoker'
 
@@ -26,7 +29,24 @@ const meta: Meta<typeof RightSidebar> = {
 }
 
 export default meta
+type RightSidebarProps = ComponentProps<typeof RightSidebar>
+
 type Story = StoryObj<typeof RightSidebar>
+
+function AutoOpenSidebarStory(props: RightSidebarProps) {
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const chatButton = rootRef.current?.querySelector<HTMLButtonElement>('button[aria-label="Open chat"]')
+    chatButton?.click()
+  }, [])
+
+  return (
+    <div className="h-screen" ref={rootRef}>
+      <RightSidebar {...props} />
+    </div>
+  )
+}
 
 const samplePlayers: PlayerData[] = [
   {
@@ -61,17 +81,17 @@ const samplePlayers: PlayerData[] = [
 const sampleMessages: ChatMessage[] = [
   {
     id: '1',
+    name: 'Alice',
     playerId: 'p1',
-    playerName: 'Alice',
     text: '👋 Hello!',
-    timestamp: Date.now() - 30000,
+    ts: Date.now() - 30000,
   },
   {
     id: '2',
+    name: 'Bob',
     playerId: 'p2',
-    playerName: 'Bob',
     text: '👍 Looks good',
-    timestamp: Date.now() - 20000,
+    ts: Date.now() - 20000,
   },
 ]
 
@@ -86,6 +106,7 @@ export const AsParticipant: Story = {
     players: samplePlayers,
     timerDuration: 0,
   },
+  render: (args) => <AutoOpenSidebarStory {...args} />,
 }
 
 /**
@@ -100,6 +121,7 @@ export const AsModerator: Story = {
     players: samplePlayers,
     timerDuration: 30,
   },
+  render: (args) => <AutoOpenSidebarStory {...args} />,
 }
 
 /**
@@ -109,6 +131,7 @@ export const WithHandRaises: Story = {
   args: {
     chat: sampleMessages,
     isModerator: true,
+    playerId: 'p1',
     players: [
       {
         handRaised: true,
@@ -138,5 +161,21 @@ export const WithHandRaises: Story = {
         voted: false,
       },
     ],
+  },
+  render: (args) => <AutoOpenSidebarStory {...args} />,
+}
+
+/**
+ * Sidebar collapsed with unread badges visible in icon rail
+ */
+export const CollapsedWithUnread: Story = {
+  args: {
+    chat: sampleMessages,
+    codeWord: 'room-42',
+    isModerator: true,
+    onSetCodeWord: () => {},
+    playerId: 'p1',
+    players: samplePlayers,
+    timerDuration: 15,
   },
 }

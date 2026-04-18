@@ -8,8 +8,9 @@
   "files.readonlyInclude": {
     "**/routeTree.gen.ts": true
   },
-  "cSpell.words": ["Indexeddb", "Webrtc", "ydoc"],
+  "cSpell.words": ["Indexeddb", "Unestimated", "Webrtc", "ydoc"],
   "chat.tools.terminal.autoApprove": {
-    "npx eslint": true
+    "npx eslint": true,
+    "npx vitest": true
   }
 }

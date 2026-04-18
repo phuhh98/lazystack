@@ -1,4 +1,6 @@
-import type { ComponentPropsWithoutRef } from 'react'
+import type { ComponentPropsWithoutRef, ReactElement, Ref } from 'react'
+
+import { forwardRef } from 'react'
 
 import { cn } from '@/lib/utils/styles'
 
@@ -48,6 +50,18 @@ const GRID_COLUMNS_CLASS_BY_VALUE: Record<ContainerGridColumns, string> = {
   6: 'grid-cols-6',
 }
 
+type ContainerComponent = <T extends ContainerElement = 'div'>(
+  props: ContainerProps<T> & { ref?: Ref<ContainerRef<T>> },
+) => null | ReactElement
+
+type ContainerElementRefByTag = {
+  article: HTMLElement
+  aside: HTMLElement
+  div: HTMLDivElement
+  main: HTMLElement
+  section: HTMLElement
+}
+
 type ContainerProps<T extends ContainerElement = 'div'> = Omit<ComponentPropsWithoutRef<T>, 'className'> & {
   align?: ContainerAlign
   as?: T
@@ -60,18 +74,23 @@ type ContainerProps<T extends ContainerElement = 'div'> = Omit<ComponentPropsWit
   wrap?: ContainerFlexWrap
 }
 
-function Container<T extends ContainerElement = 'div'>({
-  align = 'center',
-  as,
-  className,
-  columns = 1,
-  direction = 'row',
-  disableDefaultClasses = false,
-  justify = 'center',
-  layout = 'flex',
-  wrap = 'nowrap',
-  ...restProps
-}: ContainerProps<T>) {
+type ContainerRef<T extends ContainerElement = 'div'> = ContainerElementRefByTag[T]
+
+const Container = forwardRef<HTMLElement, ContainerProps<ContainerElement>>(function Container(
+  {
+    align = 'center',
+    as,
+    className,
+    columns = 1,
+    direction = 'row',
+    disableDefaultClasses = false,
+    justify = 'center',
+    layout = 'flex',
+    wrap = 'nowrap',
+    ...restProps
+  },
+  ref,
+) {
   const Component = as ?? 'div'
 
   return (
@@ -86,9 +105,10 @@ function Container<T extends ContainerElement = 'div'>({
         !disableDefaultClasses && layout === 'flex' ? FLEX_WRAP_CLASS_BY_VALUE[wrap] : undefined,
         className,
       )}
+      ref={ref as Ref<HTMLDivElement>}
     />
   )
-}
+}) as ContainerComponent
 
 export type { ContainerProps }
 export default Container

@@ -4,7 +4,6 @@ import BubbleCollisionVeil from '@/components/animations/BubbleCollisionVeil'
 import Container from '@/components/basic/Container'
 import Content from '@/components/basic/Content'
 import Typography from '@/components/basic/Typography'
-import useDocumentThemeMode from '@/hooks/useDocumentThemeMode'
 import { ROUTES } from '@/lib/constants/routes'
 import { cn } from '@/lib/utils/styles'
 
@@ -25,14 +24,10 @@ const BRAND_LINK_CLASS =
   'border-chip-border bg-chip-bg text-ink inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm no-underline shadow-[0_8px_24px_rgba(200,80,30,0.08)] sm:px-4 sm:py-2'
 
 export default function Header() {
-  const themeMode = useDocumentThemeMode()
-
-  const veilOpacity = themeMode === 'light' ? 0.15 : 0.05
-
   return (
     <header className={HEADER_SHELL_CLASS}>
       <div className="relative isolate overflow-hidden">
-        <BubbleCollisionVeil className="inset-0" initBlobCount={7} opacity={veilOpacity} overscan={1.2} speed={0.72} />
+        <BubbleCollisionVeil className="inset-0" initBlobCount={7} opacity={0.07} overscan={1.2} speed={0.72} />
         <nav aria-label="Primary">
           <Content className="page-wrap relative z-10 py-3 sm:py-4">
             <Container className="gap-x-3 gap-y-2" justify="between" wrap="wrap">

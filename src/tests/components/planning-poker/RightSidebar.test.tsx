@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
 
 import type { PlayerData } from '@/hooks/usePlanningPoker'
 
-import RightSidebar from '../../../components/planning-poker/RightSidebar'
+import RightSidebar from '@/components/planning-poker/RightSidebar'
 
 const mockPlayers: PlayerData[] = [
   {
@@ -27,25 +28,7 @@ const mockPlayers: PlayerData[] = [
 ]
 
 describe('RightSidebar Component', () => {
-  it('renders sidebar', () => {
-    const { container } = render(
-      <RightSidebar
-        chat={[]}
-        codeWord="test-code"
-        isModerator={false}
-        onLowerHand={() => {}}
-        onSend={() => {}}
-        onSetTimerDuration={() => {}}
-        onToggleHand={() => {}}
-        playerId="p1"
-        players={mockPlayers}
-        timerDuration={0}
-      />,
-    )
-    expect(container.firstChild).toBeInTheDocument()
-  })
-
-  it('displays chat tab', () => {
+  it('renders icon rail controls', () => {
     render(
       <RightSidebar
         chat={[]}
@@ -60,11 +43,15 @@ describe('RightSidebar Component', () => {
         timerDuration={0}
       />,
     )
-    // Should have tab navigation
-    expect(screen.getByRole('button', { name: /chat|message/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Open chat' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Open hand panel' })).toBeInTheDocument()
   })
 
-  it('displays hand raise tab', () => {
+  it('opens chat tab and shows empty state', async () => {
+    const user = userEvent.setup()
+
     render(
       <RightSidebar
         chat={[]}
@@ -79,17 +66,24 @@ describe('RightSidebar Component', () => {
         timerDuration={0}
       />,
     )
-    expect(screen.getByTitle('Raise hand')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Open chat' }))
+
+    expect(screen.getByText('No messages yet. Say hello!')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Type a message...')).toBeInTheDocument()
   })
 
-  it('shows code word as participant', () => {
+  it('sends message from chat composer', async () => {
+    const user = userEvent.setup()
+    const onSend = vi.fn()
+
     render(
       <RightSidebar
         chat={[]}
-        codeWord="test-code-123"
+        codeWord="test-code"
         isModerator={false}
         onLowerHand={() => {}}
-        onSend={() => {}}
+        onSend={onSend}
         onSetTimerDuration={() => {}}
         onToggleHand={() => {}}
         playerId="p1"
@@ -97,11 +91,42 @@ describe('RightSidebar Component', () => {
         timerDuration={0}
       />,
     )
-    // Code word is used in presets inside the chat panel after opening.
-    expect(screen.getByTitle('Chat')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Open chat' }))
+    await user.type(screen.getByPlaceholderText('Type a message...'), 'Need a quick break{Enter}')
+
+    expect(onSend).toHaveBeenCalledWith('Need a quick break')
   })
 
-  it('shows moderator controls when isModerator is true', () => {
+  it('toggles hand from hand tab', async () => {
+    const user = userEvent.setup()
+    const onToggleHand = vi.fn()
+
+    render(
+      <RightSidebar
+        chat={[]}
+        codeWord="test-code"
+        isModerator={false}
+        onLowerHand={() => {}}
+        onSend={() => {}}
+        onSetTimerDuration={() => {}}
+        onToggleHand={onToggleHand}
+        playerId="p1"
+        players={mockPlayers}
+        timerDuration={0}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Open hand panel' }))
+    await user.click(screen.getByRole('button', { name: /raise hand|lower hand/i }))
+
+    expect(onToggleHand).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows timer tab only for moderator and sets timer preset', async () => {
+    const user = userEvent.setup()
+    const onSetTimerDuration = vi.fn()
+
     render(
       <RightSidebar
         chat={[]}
@@ -110,13 +135,17 @@ describe('RightSidebar Component', () => {
         onLowerHand={() => {}}
         onSend={() => {}}
         onSetCodeWord={() => {}}
-        onSetTimerDuration={() => {}}
+        onSetTimerDuration={onSetTimerDuration}
         onToggleHand={() => {}}
         playerId="p1"
         players={mockPlayers}
         timerDuration={0}
       />,
     )
-    expect(screen.getByTitle('Timer settings')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Open timer settings' }))
+    await user.click(screen.getByRole('button', { name: '30s' }))
+
+    expect(onSetTimerDuration).toHaveBeenCalledWith(30)
   })
 })

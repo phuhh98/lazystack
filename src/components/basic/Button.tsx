@@ -1,5 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react'
 
+import { forwardRef } from 'react'
+
 import { cn } from '@/lib/utils/styles'
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -9,14 +11,10 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 type ButtonVariant = 'outline' | 'primary'
 
-function Button({
-  className,
-  disabled,
-  fullWidth = false,
-  type = 'button',
-  variant = 'primary',
-  ...restProps
-}: ButtonProps) {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  { className, disabled, fullWidth = false, type = 'button', variant = 'primary', ...restProps },
+  ref,
+) {
   return (
     <button
       {...restProps}
@@ -30,10 +28,11 @@ function Button({
         className,
       )}
       disabled={disabled}
+      ref={ref}
       type={type}
     />
   )
-}
+})
 
 export type { ButtonProps }
 export default Button

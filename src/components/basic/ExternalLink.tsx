@@ -1,13 +1,18 @@
-import type { AnchorHTMLAttributes } from 'react'
+import type { AnchorHTMLAttributes, ReactNode } from 'react'
+
+import { forwardRef } from 'react'
 
 import { cn } from '@/lib/utils/styles'
 
-const ExternalLink: React.FC<
-  AnchorHTMLAttributes<HTMLAnchorElement> &
-    React.PropsWithChildren & {
-      withIcon?: boolean
-    }
-> = ({ children, className, href, rel, target, withIcon = false, ...props }) => {
+type ExternalLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
+  readonly children?: ReactNode
+  readonly withIcon?: boolean
+}
+
+const ExternalLink = forwardRef<HTMLAnchorElement, ExternalLinkProps>(function ExternalLink(
+  { children, className, href, rel, target, withIcon = false, ...props },
+  ref,
+) {
   return (
     <a
       className={cn(
@@ -17,6 +22,7 @@ const ExternalLink: React.FC<
         className ?? '',
       )}
       href={href}
+      ref={ref}
       rel={rel || 'noopener noreferrer'}
       target={target || '_blank'}
       {...props}
@@ -24,6 +30,6 @@ const ExternalLink: React.FC<
       {children}
     </a>
   )
-}
+})
 
 export default ExternalLink

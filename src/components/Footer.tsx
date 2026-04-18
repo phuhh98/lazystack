@@ -4,17 +4,14 @@ import Content from '@/components/basic/Content'
 import ExternalLink from '@/components/basic/ExternalLink'
 import Typography from '@/components/basic/Typography'
 import GithubIcon from '@/components/brandIcons/GithubIcon'
-import useDocumentThemeMode from '@/hooks/useDocumentThemeMode'
 import { cn } from '@/lib/utils/styles'
 
 export default function Footer() {
-  const themeMode = useDocumentThemeMode()
   const year = new Date().getFullYear()
-  const veilOpacity = themeMode === 'light' ? 0.15 : 0.05
 
   return (
     <footer className={cn('border-border bg-bg-surface relative isolate overflow-hidden border-t', 'px-4 pt-8 pb-6')}>
-      <BubbleCollisionVeil className="inset-0" initBlobCount={10} opacity={veilOpacity} overscan={1.35} speed={0.72} />
+      <BubbleCollisionVeil className="inset-0" initBlobCount={10} opacity={0.07} overscan={1.35} speed={0.72} />
 
       <Content className="page-wrap relative z-10">
         <Container className="gap-4 text-center sm:flex-row sm:text-left" direction="col" justify="between">

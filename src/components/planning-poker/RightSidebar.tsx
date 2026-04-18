@@ -107,7 +107,7 @@ export default function RightSidebar({
 
   return (
     <Drawer.Root disablePointerDismissal modal={false} onOpenChange={setIsOpen} open={isOpen}>
-      <div className="border-border relative flex h-full shrink-0 border-l" ref={sidebarRootRef}>
+      <div className="border-border relative flex border-l" ref={sidebarRootRef}>
         <RightSidebarIconRail
           activeTab={activeTab}
           isModerator={isModerator}

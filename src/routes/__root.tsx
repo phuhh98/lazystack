@@ -48,7 +48,7 @@ function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
             className={cn(
               'dark:bg-dark-teal-600/10 bg-amber-200/10',
               'shadow-dark-teal-900/20 shadow-xl dark:shadow-amber-300/20',
-              'grow',
+              'flex grow flex-col',
               isGameRoom ? 'overflow-hidden' : 'overflow-y-auto',
             )}
           >

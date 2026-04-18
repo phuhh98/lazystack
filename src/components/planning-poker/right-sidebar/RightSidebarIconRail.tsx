@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { ChevronLeft, Hand, MessageSquare, Timer } from 'lucide-react'
+import { ChevronRight, Hand, MessageSquare, Timer } from 'lucide-react'
 
 import Button from '@/components/basic/Button'
 import Container from '@/components/basic/Container'
@@ -47,7 +47,7 @@ export default function RightSidebarIconRail({
   return (
     <Container
       align="center"
-      className="bg-bg-surface border-border w-10 shrink-0 gap-1 border-r pt-1"
+      className="bg-bg-surface border-border w-10 grow gap-1 border-r pt-1"
       direction="col"
       justify="start"
     >
@@ -58,7 +58,7 @@ export default function RightSidebarIconRail({
         title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
         variant="outline"
       >
-        <ChevronLeft className={cn('h-4 w-4 transition-transform', isOpen ? '' : 'rotate-180')} />
+        <ChevronRight className={cn('h-4 w-4 transition-transform', isOpen ? '' : 'rotate-180')} />
       </Button>
 
       <Container className="bg-border h-px w-6" disableDefaultClasses />

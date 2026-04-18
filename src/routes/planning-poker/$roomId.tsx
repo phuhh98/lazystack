@@ -112,11 +112,11 @@ function GameRoom() {
   }
 
   return (
-    <Container as="main" className="relative -mx-4 h-full overflow-hidden" disableDefaultClasses>
+    <Container as="main" className="relative -mx-4 flex grow flex-col overflow-hidden" disableDefaultClasses>
       {showConfetti && <Confetti key={gameState.storyIndex} />}
 
       {isModerator ? (
-        <Container as="section" className="flex h-full overflow-x-auto overflow-y-hidden" disableDefaultClasses>
+        <Container as="section" className="flex grow overflow-x-auto overflow-y-hidden" disableDefaultClasses>
           <StorySidebar
             onAdd={addStory}
             onlineCount={onlineCount}
@@ -176,7 +176,7 @@ function GameRoom() {
           </Container>
         </Container>
       ) : (
-        <Container as="section" className="flex h-full overflow-x-auto overflow-y-hidden" disableDefaultClasses>
+        <Container as="section" className="flex h-full grow overflow-x-auto overflow-y-hidden" disableDefaultClasses>
           <ParticipantStorySidebar
             currentStory={gameState.story}
             onlineCount={onlineCount}

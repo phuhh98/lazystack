@@ -59,7 +59,12 @@ export interface FileRouteTypes {
   fullPaths: '/' | '/about' | '/planning-poker/$roomId' | '/planning-poker/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/about' | '/planning-poker/$roomId' | '/planning-poker'
-  id: '__root__' | '/' | '/about' | '/planning-poker/$roomId' | '/planning-poker/'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/planning-poker/$roomId'
+    | '/planning-poker/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -108,7 +113,9 @@ const rootRouteChildren: RootRouteChildren = {
   PlanningPokerRoomIdRoute: PlanningPokerRoomIdRoute,
   PlanningPokerIndexRoute: PlanningPokerIndexRoute,
 }
-export const routeTree = rootRouteImport._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>()
+export const routeTree = rootRouteImport
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
 import type { createStart } from '@tanstack/react-start'

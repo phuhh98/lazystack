@@ -39,3 +39,11 @@ type Story = StoryObj<typeof Header>
  * and theme toggle. The header is sticky and appears at the top of the page.
  */
 export const Default: Story = {}
+
+export const MobileLayout: Story = {
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+}

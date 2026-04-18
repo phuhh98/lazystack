@@ -30,6 +30,12 @@ function mockMatchMedia() {
 }
 
 describe('Header Component', () => {
+  it('renders a primary navigation landmark', () => {
+    mockMatchMedia()
+    render(<Header />)
+    expect(screen.getByRole('navigation', { name: /primary/i })).toBeInTheDocument()
+  })
+
   it('renders header with logo', () => {
     mockMatchMedia()
     render(<Header />)
@@ -48,6 +54,16 @@ describe('Header Component', () => {
     render(<Header />)
     const themeButton = screen.getByRole('button', { name: /theme mode/i })
     expect(themeButton).toBeInTheDocument()
+  })
+
+  it('keeps theme toggle after nav links in DOM order', () => {
+    mockMatchMedia()
+    render(<Header />)
+
+    const planningPokerLink = screen.getByRole('link', { name: 'Planning Poker' })
+    const themeButton = screen.getByRole('button', { name: /theme mode/i })
+
+    expect(planningPokerLink.compareDocumentPosition(themeButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('has sticky positioning', () => {

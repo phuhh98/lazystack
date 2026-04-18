@@ -16,6 +16,8 @@ Input Resolution Priority:
 Execution Requirements:
 
 - Respect user intent: create a new component, update an existing component, or provide a concrete refactor implementation.
+- Before creating/updating/refactoring components, consult `src/components/COMPONENT_LOOKUP.md` to identify reusable custom components and avoid duplication.
+- If component behavior, props, ownership, or file structure changes, update `src/components/COMPONENT_LOOKUP.md` in the same task.
 - Reuse preexisting Base UI primitives from `@base-ui/react` where practical before introducing custom interaction primitives.
 - Use Tailwind utility classes and project theme semantics aligned with `src/styles.css` and Tailwind v4 conventions.
 - Prefer semantic theme token usage (for example utility tokens like `text-ink`, `bg-bg-surface`, `border-border`) when available.
@@ -50,3 +52,4 @@ Reference Workspace Conventions:
 - [.github/instructions/blind-poker.instructions.md](../instructions/blind-poker.instructions.md)
 - [.github/instructions/coding-conventions.instructions.md](../instructions/coding-conventions.instructions.md)
 - [.github/instructions/prompt-authoring.instructions.md](../instructions/prompt-authoring.instructions.md)
+- [src/components/COMPONENT_LOOKUP.md](../../src/components/COMPONENT_LOOKUP.md)

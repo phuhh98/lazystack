@@ -1,80 +1,85 @@
-import { useEffect, useState } from 'react'
+import { CloudSun, MoonStar } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
-type ThemeMode = 'auto' | 'dark' | 'light'
+import type { ThemeMode } from '@/lib/utils/theme'
+
+import Button from '@/components/basic/Button'
+import useUiPreferencesStore from '@/lib/stores/uiPreferencesStore'
+import { applyThemeMode } from '@/lib/utils/theme'
 
 export default function ThemeToggle() {
-  const [mode, setMode] = useState<ThemeMode>('auto')
+  const mode = useUiPreferencesStore((state) => state.themeMode)
+  const setThemeMode = useUiPreferencesStore((state) => state.setThemeMode)
+  const [animating, setAnimating] = useState(false)
+  const [pendingMode, setPendingMode] = useState<null | ThemeMode>(null)
+  const transitionTimerRef = useRef<null | ReturnType<typeof setTimeout>>(null)
 
   useEffect(() => {
-    const initialMode = getInitialMode()
-    setMode(initialMode)
-    applyThemeMode(initialMode)
-  }, [])
-
-  useEffect(() => {
-    if (mode !== 'auto') {
-      return
-    }
-
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    const onChange = () => applyThemeMode('auto')
-
-    media.addEventListener('change', onChange)
+    applyThemeMode(mode)
     return () => {
-      media.removeEventListener('change', onChange)
+      if (transitionTimerRef.current !== null) {
+        clearTimeout(transitionTimerRef.current)
+      }
     }
   }, [mode])
 
   function toggleMode() {
-    const nextMode: ThemeMode = mode === 'light' ? 'dark' : mode === 'dark' ? 'auto' : 'light'
-    setMode(nextMode)
-    applyThemeMode(nextMode)
-    window.localStorage.setItem('theme', nextMode)
+    if (animating) {
+      return
+    }
+
+    const nextMode: ThemeMode = mode === 'light' ? 'dark' : 'light'
+    setPendingMode(nextMode)
+    setAnimating(true)
+
+    transitionTimerRef.current = setTimeout(() => {
+      setThemeMode(nextMode)
+      setPendingMode(null)
+      setAnimating(false)
+      transitionTimerRef.current = null
+    }, 700)
   }
 
-  const label =
-    mode === 'auto'
-      ? 'Theme mode: auto (system). Click to switch to light mode.'
-      : `Theme mode: ${mode}. Click to switch mode.`
+  const nextMode = mode === 'light' ? 'dark' : 'light'
+  const label = `Theme mode: ${mode}. Click to switch to ${nextMode} mode.`
+  const currentIcon = mode === 'light' ? <CloudSun aria-hidden size={16} /> : <MoonStar aria-hidden size={16} />
+  const incomingMode = pendingMode ?? mode
+  const incomingIcon =
+    incomingMode === 'light' ? <CloudSun aria-hidden size={16} /> : <MoonStar aria-hidden size={16} />
 
   return (
-    <button
+    <Button
       aria-label={label}
-      className="rounded-full border border-[var(--chip-border)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm font-semibold text-[var(--ink)] shadow-[0_8px_22px_rgba(30,90,72,0.08)] transition hover:-translate-y-0.5"
+      className="border-chip-border bg-chip-bg text-ink rounded-full px-3 py-1.5 shadow-[0_8px_22px_rgba(30,90,72,0.08)] transition hover:-translate-y-0.5"
+      disabled={animating}
       onClick={toggleMode}
       title={label}
       type="button"
+      variant="outline"
     >
-      {mode === 'auto' ? 'Auto' : mode === 'dark' ? 'Dark' : 'Light'}
-    </button>
+      <span className="flex items-center gap-2">
+        <span className="relative h-4 w-4 overflow-hidden" data-testid="theme-toggle-icon-stack">
+          <span
+            className="absolute inset-0"
+            style={{
+              transform: animating ? 'translateY(100%)' : 'translateY(0%)',
+              transition: animating ? 'transform 700ms ease' : 'none',
+            }}
+          >
+            {currentIcon}
+          </span>
+          <span
+            className="absolute inset-0"
+            style={{
+              transform: animating ? 'translateY(0%)' : 'translateY(-100%)',
+              transition: animating ? 'transform 700ms ease' : 'none',
+            }}
+          >
+            {incomingIcon}
+          </span>
+        </span>
+        <span>{mode === 'dark' ? 'Dark' : 'Light'}</span>
+      </span>
+    </Button>
   )
-}
-
-function applyThemeMode(mode: ThemeMode) {
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  const resolved = mode === 'auto' ? (prefersDark ? 'dark' : 'light') : mode
-
-  document.documentElement.classList.remove('light', 'dark')
-  document.documentElement.classList.add(resolved)
-
-  if (mode === 'auto') {
-    document.documentElement.removeAttribute('data-theme')
-  } else {
-    document.documentElement.setAttribute('data-theme', mode)
-  }
-
-  document.documentElement.style.colorScheme = resolved
-}
-
-function getInitialMode(): ThemeMode {
-  if (typeof window === 'undefined') {
-    return 'auto'
-  }
-
-  const stored = window.localStorage.getItem('theme')
-  if (stored === 'light' || stored === 'dark' || stored === 'auto') {
-    return stored
-  }
-
-  return 'auto'
 }

@@ -1,3 +1,4 @@
+import IslandShell from '@/components/basic/IslandShell'
 import { cn } from '@/lib/utils/styles'
 
 export interface CardDeckProps {
@@ -9,7 +10,7 @@ export interface CardDeckProps {
 
 export default function CardDeck({ cards, disabled, onSelect, selectedCard }: CardDeckProps) {
   return (
-    <div className="island-shell rounded-xl p-3">
+    <IslandShell className="rounded-xl p-3">
       <style>{`
         @keyframes pp-tilt {
           0%, 100% { transform: translateY(-10px) scale(1.08) rotateY(-16deg); }
@@ -51,6 +52,6 @@ export default function CardDeck({ cards, disabled, onSelect, selectedCard }: Ca
           )
         })}
       </div>
-    </div>
+    </IslandShell>
   )
 }

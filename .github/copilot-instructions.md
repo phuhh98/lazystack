@@ -11,6 +11,8 @@
 ## Architecture
 
 - Stack: TanStack Start (SSR), React 19, file-based TanStack Router, Tailwind v4, TypeScript strict.
+- Use Zustand as the default state-management library for client-side/shared app state; avoid introducing alternative global state libraries unless explicitly required.
+- Use `matter-js` as the default 2D physics engine for interactive physics behavior; avoid introducing additional physics engines unless explicitly required.
 - Planning poker collaboration is peer-to-peer via Yjs + y-webrtc, with local persistence via y-indexeddb.
 - Keep all Yjs and WebRTC orchestration inside src/hooks/usePlanningPoker.ts. Do not spread Yjs logic into UI components.
 - Treat src/routeTree.gen.ts as generated; never hand-edit it.
@@ -32,6 +34,9 @@
 
 - Follow the Blind Poker domain rules in .github/instructions/blind-poker.instructions.md when working in planning-poker areas.
 - Follow coding conventions in .github/instructions/coding-conventions.instructions.md for TypeScript, component, styling, and testing patterns.
+- Follow animation conventions in .github/instructions/pixi-animation.instructions.md when implementing animated UI effects.
+- Before creating/updating/refactoring components, consult src/components/COMPONENT_LOOKUP.md for fast reuse decisions.
+- Keep src/components/COMPONENT_LOOKUP.md short and decision-oriented: minimal but sufficient information for fast lookup.
 
 ## SSR And Realtime Pitfalls
 
@@ -43,10 +48,12 @@
 
 - Blind Poker domain conventions: .github/instructions/blind-poker.instructions.md
 - Coding conventions: .github/instructions/coding-conventions.instructions.md
+- PixiJS animation conventions: .github/instructions/pixi-animation.instructions.md
 - App setup and generic framework usage: README.md
 - Signaling env example: .env.example
 - Theme tokens and shared styles: src/styles.css
 - Realtime game state orchestration: src/hooks/usePlanningPoker.ts
+- Component lookup index: src/components/COMPONENT_LOOKUP.md
 
 ## Working Style For Agents
 

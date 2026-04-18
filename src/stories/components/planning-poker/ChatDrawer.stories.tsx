@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import type { ChatMessage } from '@/hooks/usePlanningPoker'
 
-import Container from '@/components/basic/Container'
+import Container from '@/components/basic/Content'
 import ChatDrawer from '@/components/planning-poker/ChatDrawer'
 
 const meta: Meta<typeof ChatDrawer> = {

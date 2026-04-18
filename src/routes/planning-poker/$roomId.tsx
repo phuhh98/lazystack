@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import type { GamePhase, StoryItem } from '@/hooks/usePlanningPoker'
 
+import IslandShell from '@/components/basic/IslandShell'
 import CardDeck from '@/components/planning-poker/CardDeck'
 import Confetti from '@/components/planning-poker/Confetti'
 import PokerHand from '@/components/planning-poker/PokerHand'
@@ -158,7 +159,7 @@ function GameRoom() {
     return (
       <>
         {/* Story section */}
-        <section className="island-shell rounded-xl p-3">
+        <IslandShell as="section" className="rounded-xl p-3">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
               {/* LOBBY — moderator */}
@@ -352,7 +353,7 @@ function GameRoom() {
               </form>
             )}
           </div>
-        </section>
+        </IslandShell>
 
         {/* ── Vote status + moderator controls — RIGHT BELOW story section ── */}
         {gameState.phase === 'voting' && isModerator && (

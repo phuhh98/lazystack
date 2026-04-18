@@ -4,6 +4,11 @@ import { describe, expect, it } from 'vitest'
 import Footer from '../../components/Footer'
 
 describe('Footer Component', () => {
+  it('renders footer landmark', () => {
+    render(<Footer />)
+    expect(screen.getByRole('contentinfo')).toBeInTheDocument()
+  })
+
   it('renders copyright notice with current year', () => {
     const currentYear = new Date().getFullYear()
     render(<Footer />)
@@ -15,6 +20,8 @@ describe('Footer Component', () => {
     const link = screen.getByRole('link', { name: /phuhh98/i })
     expect(link).toBeInTheDocument()
     expect(link).toHaveAttribute('href', 'https://github.com/phuhh98')
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
   it('renders GitHub icon', () => {

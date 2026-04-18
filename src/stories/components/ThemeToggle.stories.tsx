@@ -15,7 +15,7 @@ export default meta
 type Story = StoryObj<typeof ThemeToggle>
 
 /**
- * Theme toggle button allowing users to switch between light, dark, and auto modes.
+ * Theme toggle button allowing users to switch between light and dark modes.
  */
 export const Default: Story = {}
 

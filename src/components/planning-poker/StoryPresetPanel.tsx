@@ -4,6 +4,9 @@ import { useState } from 'react'
 
 import type { StoryItem } from '@/hooks/usePlanningPoker'
 
+import { ISLAND_SHELL_CLASSNAME } from '@/components/basic/IslandShell'
+import { cn } from '@/lib/utils/styles'
+
 interface StoryPresetPanelProps {
   disabled?: boolean
   onAdd: (title: string) => void
@@ -23,7 +26,7 @@ export default function StoryPresetPanel({ disabled, onAdd, onRemove, onReorder,
   }
 
   return (
-    <Collapsible.Root className="island-shell rounded-2xl">
+    <Collapsible.Root className={cn(ISLAND_SHELL_CLASSNAME, 'rounded-2xl')}>
       <Collapsible.Trigger
         className="flex w-full items-center justify-between gap-2 rounded-2xl px-5 py-3 text-sm font-semibold"
         style={{ color: 'var(--ink)' }}

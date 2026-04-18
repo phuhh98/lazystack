@@ -1,5 +1,6 @@
 import type { GamePhase } from '@/hooks/usePlanningPoker'
 
+import IslandShell from '@/components/basic/IslandShell'
 import { cn } from '@/lib/utils/styles'
 
 export interface PlayerInfo {
@@ -18,7 +19,7 @@ export interface PlayerListProps {
 
 export default function PlayerList({ currentPlayerId, phase, players }: PlayerListProps) {
   return (
-    <aside className="island-shell rounded-2xl p-4">
+    <IslandShell as="aside" className="rounded-2xl p-4">
       <p className="island-kicker mb-3">
         Players ({players.filter((p) => p.isOnline).length}/{players.length})
       </p>
@@ -60,7 +61,7 @@ export default function PlayerList({ currentPlayerId, phase, players }: PlayerLi
           <li className="py-4 text-center text-sm text-[var(--ink-muted)]">Waiting for players…</li>
         )}
       </ul>
-    </aside>
+    </IslandShell>
   )
 }
 

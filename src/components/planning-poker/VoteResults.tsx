@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import type { PlayerData } from '@/hooks/usePlanningPoker'
 
+import IslandShell from '@/components/basic/IslandShell'
+
 export interface VoteResultsProps {
   isConsensus: boolean
   isModerator: boolean
@@ -60,7 +62,7 @@ export default function VoteResults({
   }
 
   return (
-    <div className="island-shell shrink-0 rounded-xl p-3">
+    <IslandShell className="shrink-0 rounded-xl p-3">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <p className="island-kicker">Results</p>
         {isConsensus && (
@@ -144,6 +146,6 @@ export default function VoteResults({
           </div>
         </div>
       )}
-    </div>
+    </IslandShell>
   )
 }

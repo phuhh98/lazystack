@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 
 import type { ChatMessage, GamePhase, PlayerData } from '@/hooks/usePlanningPoker'
 
+import IslandShell from '@/components/basic/IslandShell'
+
 interface PokerHandProps {
   chat: ChatMessage[]
   currentPlayerId: string
@@ -46,7 +48,7 @@ export default function PokerHand({ chat, currentPlayerId, moderatorId, phase, p
         50%       { translate: 0 -7px; }
       }
     `}</style>
-      <div className="island-shell flex min-h-0 flex-1 flex-col rounded-xl p-3">
+      <IslandShell className="flex min-h-0 flex-1 flex-col rounded-xl p-3">
         <p className="island-kicker mb-3 shrink-0">Players</p>
         {/* pt-10 gives 40px clearance so speech bubbles aren't clipped by overflow-auto */}
         <div className="flex flex-wrap justify-center gap-4 overflow-auto pt-16">
@@ -61,7 +63,7 @@ export default function PokerHand({ chat, currentPlayerId, moderatorId, phase, p
             />
           ))}
         </div>
-      </div>
+      </IslandShell>
     </>
   )
 }

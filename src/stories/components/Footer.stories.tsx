@@ -34,3 +34,13 @@ type Story = StoryObj<typeof Footer>
  * The footer displays the current year dynamically.
  */
 export const Default: Story = {}
+
+export const DarkTheme: Story = {
+  decorators: [
+    (Story) => (
+      <div data-theme="dark">
+        <Story />
+      </div>
+    ),
+  ],
+}

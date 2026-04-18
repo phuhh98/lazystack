@@ -3,6 +3,8 @@ import { Pencil, Trophy } from 'lucide-react'
 
 import type { StoryItem } from '@/hooks/usePlanningPoker'
 
+import IslandShell from '@/components/basic/IslandShell'
+
 const CARD_VALUES = ['1', '2', '3', '5', '8', '13', '21', '?', '☕']
 
 interface SessionDashboardProps {
@@ -28,25 +30,25 @@ export default function SessionDashboard({ isModerator, onSetEstimate, storyList
 
       {/* Stats */}
       <div className="flex flex-wrap gap-4">
-        <div className="island-shell rounded-2xl px-5 py-3 text-center" style={{ minWidth: '120px' }}>
+        <IslandShell className="rounded-2xl px-5 py-3 text-center" style={{ minWidth: '120px' }}>
           <p className="island-kicker mb-1">Total</p>
           <p className="text-2xl font-bold" style={{ color: 'var(--ink)' }}>
             {storyList.length}
           </p>
-        </div>
-        <div className="island-shell rounded-2xl px-5 py-3 text-center" style={{ minWidth: '120px' }}>
+        </IslandShell>
+        <IslandShell className="rounded-2xl px-5 py-3 text-center" style={{ minWidth: '120px' }}>
           <p className="island-kicker mb-1">Estimated</p>
           <p className="text-2xl font-bold" style={{ color: 'var(--primary)' }}>
             {completed.length}
           </p>
-        </div>
+        </IslandShell>
         {avg !== null && (
-          <div className="island-shell rounded-2xl px-5 py-3 text-center" style={{ minWidth: '120px' }}>
+          <IslandShell className="rounded-2xl px-5 py-3 text-center" style={{ minWidth: '120px' }}>
             <p className="island-kicker mb-1">Avg</p>
             <p className="text-2xl font-bold" style={{ color: 'var(--success)' }}>
               {avg % 1 === 0 ? avg : avg.toFixed(1)}
             </p>
-          </div>
+          </IslandShell>
         )}
       </div>
 
@@ -56,7 +58,7 @@ export default function SessionDashboard({ isModerator, onSetEstimate, storyList
           No stories were tracked this session.
         </p>
       ) : (
-        <div className="island-shell overflow-hidden rounded-2xl">
+        <IslandShell className="overflow-hidden rounded-2xl">
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
@@ -143,7 +145,7 @@ export default function SessionDashboard({ isModerator, onSetEstimate, storyList
               ))}
             </tbody>
           </table>
-        </div>
+        </IslandShell>
       )}
     </div>
   )

@@ -47,3 +47,7 @@ export const MobileLayout: Story = {
     },
   },
 }
+
+export const SemanticHeading: Story = {
+  name: 'Semantic Heading Structure',
+}

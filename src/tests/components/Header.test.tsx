@@ -42,6 +42,12 @@ describe('Header Component', () => {
     expect(screen.getByRole('link', { name: /lazystack/i })).toBeInTheDocument()
   })
 
+  it('renders brand heading as level 2', () => {
+    mockMatchMedia()
+    render(<Header />)
+    expect(screen.getByRole('heading', { level: 2, name: /lazystack/i })).toBeInTheDocument()
+  })
+
   it('renders navigation links', () => {
     mockMatchMedia()
     render(<Header />)

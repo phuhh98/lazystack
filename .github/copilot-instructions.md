@@ -60,3 +60,9 @@
 - Prefer minimal, targeted changes that preserve existing public behavior.
 - Before finalizing feature work on planning poker, run targeted tests first, then broader tests as needed.
 - If behavior touches voting, reveal, moderation, reconnect, or dashboard summaries, add or update tests in src/tests/components/planning-poker/.
+
+## Response Format Preferences
+
+- When the user asks to perform a task, present results as bullet lists only.
+- Avoid extra filler words before or after the result list.
+- If giving recommendations, keep them short and efficient for decision-making.

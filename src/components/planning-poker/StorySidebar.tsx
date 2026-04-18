@@ -1,3 +1,5 @@
+import type { KeyboardEvent } from 'react'
+
 import { Form, Input } from '@base-ui/react'
 import { Check, Copy, Play, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
@@ -9,8 +11,6 @@ import Container from '@/components/basic/Container'
 import Typography from '@/components/basic/Typography'
 import { cn } from '@/lib/utils/styles'
 
-type FormSubmitEvent = Parameters<NonNullable<React.ComponentProps<'form'>['onSubmit']>>[0]
-
 interface StorySidebarProps {
   readonly onAdd: (title: string) => void
   readonly onlineCount: number
@@ -21,6 +21,12 @@ interface StorySidebarProps {
   readonly roomId: string
   readonly storyList: StoryItem[]
 }
+
+const STORY_ITEM_CLASS_BY_STATE = {
+  dragOver: 'bg-primary/10 border-primary',
+  estimated: 'bg-primary/5 border-primary',
+  idle: 'bg-bg-surface border-border',
+} as const
 
 export default function StorySidebar({
   onAdd,
@@ -38,12 +44,24 @@ export default function StorySidebar({
 
   const canSelect = phase === 'lobby' || phase === 'revealed'
 
-  function handleAdd(e: FormSubmitEvent) {
-    e.preventDefault()
-    if (!input.trim()) return
+  function handleAdd() {
+    const nextStoryTitle = input.trim()
 
-    onAdd(input.trim())
+    if (!nextStoryTitle) {
+      return
+    }
+
+    onAdd(nextStoryTitle)
     setInput('')
+  }
+
+  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== 'Enter') {
+      return
+    }
+
+    event.preventDefault()
+    handleAdd()
   }
 
   function handleCopy() {
@@ -90,10 +108,11 @@ export default function StorySidebar({
       <Typography as="p" className="island-kicker shrink-0">
         Story List
       </Typography>
-      <Form className="flex shrink-0 gap-1.5" onSubmit={handleAdd}>
+      <Form className="flex shrink-0 gap-1.5" onFormSubmit={handleAdd}>
         <Input
           className="border-border bg-bg-surface text-ink placeholder:text-ink-muted focus:border-primary min-w-0 flex-1 rounded-lg border px-2 py-1.5 text-xs outline-none"
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleInputKeyDown}
           placeholder="Add story…"
           type="text"
           value={input}
@@ -101,8 +120,9 @@ export default function StorySidebar({
         <Button
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg p-0"
           disabled={!input.trim()}
+          onClick={handleAdd}
           title="Add story"
-          type="submit"
+          type="button"
         >
           <Plus size={13} />
         </Button>
@@ -153,7 +173,7 @@ export default function StorySidebar({
                     {story.estimatedVote}
                   </Typography>
                 ) : (
-                  <Container as="div" className="flex shrink-0 items-center gap-0.5" disableDefaultClasses>
+                  <Container as="div" className="flex shrink-0 items-center gap-2" disableDefaultClasses>
                     {canSelect && (
                       <Button
                         className="flex h-5 w-5 items-center justify-center rounded p-0 hover:opacity-80"
@@ -165,7 +185,7 @@ export default function StorySidebar({
                       </Button>
                     )}
                     <Button
-                      className="text-ink-muted rounded p-0.5 hover:text-red-500"
+                      className="text-ink-muted rounded p-0.75 hover:text-red-500"
                       onClick={() => onRemove(story.id)}
                       type="button"
                       variant="outline"
@@ -185,12 +205,8 @@ export default function StorySidebar({
 
 function getStoryItemClasses(isDragOver: boolean, estimatedVote?: string) {
   if (isDragOver) {
-    return 'bg-primary/10 border-primary'
+    return STORY_ITEM_CLASS_BY_STATE.dragOver
   }
 
-  if (estimatedVote) {
-    return 'bg-primary/5 border-primary'
-  }
-
-  return 'bg-bg-surface border-border'
+  return estimatedVote ? STORY_ITEM_CLASS_BY_STATE.estimated : STORY_ITEM_CLASS_BY_STATE.idle
 }

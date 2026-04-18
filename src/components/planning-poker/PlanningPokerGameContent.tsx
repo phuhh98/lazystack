@@ -336,6 +336,7 @@ export default function PlanningPokerGameContent({
               nextStory(estimatedVote)
             }
           }}
+          onReestimate={() => startVoting(gameState.story)}
           players={players}
         />
       )}

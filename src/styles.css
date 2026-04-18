@@ -78,7 +78,10 @@
   --color-rich-mahogany-950: #0a0001;
 
   --color-ink: var(--ink);
+  --color-ink-secondary: var(--ink-secondary);
   --color-ink-muted: var(--ink-muted);
+  --color-inked-muted: var(--ink-muted);
+  --color-disabled: var(--ink-muted);
   --color-primary: var(--primary);
   --color-primary-deep: var(--primary-deep);
   --color-success: var(--success);
@@ -96,6 +99,7 @@
 /* Palette: #122841 · #e2b486 · #cc8853 · #a96130 · #793614             */
 :root {
   --ink: var(--color-dark-teal-900);
+  --ink-secondary: var(--color-dark-teal-700);
   --ink-muted: var(--color-gray-500);
   --primary: var(--color-amber-earth-500);
   --primary-deep: var(--color-amber-earth-600);
@@ -119,9 +123,10 @@
 /* ─── Dark theme ─────────────────────────────────────────────────────── */
 :root[data-theme='dark'] {
   --ink: var(--color-amber-earth-400);
+  --ink-secondary: var(--color-amber-earth-100);
   --ink-muted: var(--color-gray-500);
   --primary: var(--color-amber-earth-400);
-  --primary-deep: var(--color-amber-earth-700);
+  --primary-deep: var(--color-amber-earth-600);
   --success: var(--color-dark-teal-500);
   --sand: var(--color-dark-teal-900);
   --foam: var(--color-dark-teal-800);

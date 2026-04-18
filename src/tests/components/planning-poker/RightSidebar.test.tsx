@@ -52,7 +52,7 @@ describe('RightSidebar Component', () => {
   it('opens chat tab and shows empty state', async () => {
     const user = userEvent.setup()
 
-    render(
+    const { container } = render(
       <RightSidebar
         chat={[]}
         codeWord="test-code"
@@ -70,7 +70,9 @@ describe('RightSidebar Component', () => {
     await user.click(screen.getByRole('button', { name: 'Open chat' }))
 
     expect(screen.getByText('No messages yet. Say hello!')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('Type a message...')).toBeInTheDocument()
+    const chatInput = screen.getByPlaceholderText('Type a message...')
+    expect(chatInput).toBeInTheDocument()
+    expect(container).toContainElement(chatInput)
   })
 
   it('sends message from chat composer', async () => {
@@ -147,5 +149,30 @@ describe('RightSidebar Component', () => {
     await user.click(screen.getByRole('button', { name: '30s' }))
 
     expect(onSetTimerDuration).toHaveBeenCalledWith(30)
+  })
+
+  it('closes sidebar when collapse button is clicked after opening', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <RightSidebar
+        chat={[]}
+        codeWord="test-code"
+        isModerator={false}
+        onLowerHand={() => {}}
+        onSend={() => {}}
+        onSetTimerDuration={() => {}}
+        onToggleHand={() => {}}
+        playerId="p1"
+        players={mockPlayers}
+        timerDuration={0}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Open chat' }))
+    expect(screen.getByRole('button', { name: 'Collapse sidebar' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Collapse sidebar' }))
+    expect(screen.getByRole('button', { name: 'Expand sidebar' })).toBeInTheDocument()
   })
 })

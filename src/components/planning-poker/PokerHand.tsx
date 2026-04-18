@@ -5,14 +5,34 @@ import { useEffect, useState } from 'react'
 import type { ChatMessage, GamePhase, PlayerData } from '@/hooks/usePlanningPoker'
 
 import IslandShell from '@/components/basic/IslandShell'
+import { cn } from '@/lib/utils/styles'
 
-interface PokerHandProps {
+type CardFaceProps = Readonly<{
+  value: null | string
+}>
+
+type PlayerCardProps = Readonly<{
+  isModerator: boolean
+  isSelf: boolean
+  phase: GamePhase
+  player: PlayerData
+  recentMsg: ChatMessage | null
+}>
+
+type PokerHandProps = Readonly<{
   chat: ChatMessage[]
   currentPlayerId: string
   moderatorId: string
   phase: GamePhase
   players: PlayerData[]
-}
+}>
+
+type SpeechBubbleProps = Readonly<{
+  text: string
+}>
+
+const RECENT_MESSAGE_WINDOW_MS = 6_000
+const SPEECH_BUBBLE_PREVIEW_MAX = 30
 
 export default function PokerHand({ chat, currentPlayerId, moderatorId, phase, players }: PokerHandProps) {
   const [now, setNow] = useState(Date.now)
@@ -27,7 +47,7 @@ export default function PokerHand({ chat, currentPlayerId, moderatorId, phase, p
   // Latest message per player within 6 seconds
   const recentMsgs = new Map<string, ChatMessage>()
   for (const msg of chat) {
-    if (now - msg.ts <= 6_000) {
+    if (now - msg.ts <= RECENT_MESSAGE_WINDOW_MS) {
       const existing = recentMsgs.get(msg.playerId)
       if (!existing || msg.ts > existing.ts) {
         recentMsgs.set(msg.playerId, msg)
@@ -51,44 +71,38 @@ export default function PokerHand({ chat, currentPlayerId, moderatorId, phase, p
       <IslandShell className="flex min-h-0 flex-1 flex-col rounded-xl p-3">
         <p className="island-kicker mb-3 shrink-0">Players</p>
         {/* pt-10 gives 40px clearance so speech bubbles aren't clipped by overflow-auto */}
-        <div className="flex flex-wrap justify-center gap-4 overflow-auto pt-16">
-          {players.map((player) => (
-            <PlayerCard
-              isModerator={player.id === moderatorId}
-              isSelf={player.id === currentPlayerId}
-              key={player.id}
-              phase={phase}
-              player={player}
-              recentMsg={recentMsgs.get(player.id) ?? null}
-            />
-          ))}
-        </div>
+        <Tooltip.Provider delay={300}>
+          <div className="flex flex-wrap justify-center gap-4 overflow-auto pt-16">
+            {players.map((player) => (
+              <PlayerCard
+                isModerator={player.id === moderatorId}
+                isSelf={player.id === currentPlayerId}
+                key={player.id}
+                phase={phase}
+                player={player}
+                recentMsg={recentMsgs.get(player.id) ?? null}
+              />
+            ))}
+          </div>
+        </Tooltip.Provider>
       </IslandShell>
     </>
   )
 }
 
 // Revealed face — shows actual vote value
-function CardFront({ value }: { value: null | string }) {
+function CardFront({ value }: CardFaceProps) {
   const display = value ?? '?'
   return (
     <div
-      className="absolute inset-0 flex items-center justify-center rounded-xl"
-      style={{
-        backfaceVisibility: 'hidden',
-        background: 'var(--surface-strong)',
-        border: '2px solid var(--primary)',
-      }}
+      className={cn(
+        'absolute inset-0 flex items-center justify-center rounded-xl backface-hidden',
+        'bg-bg-surface-strong border-primary border-2',
+      )}
     >
-      <span className="absolute top-1.5 left-2 text-sm font-bold" style={{ color: 'var(--primary)' }}>
-        {display}
-      </span>
-      <span className="absolute right-2 bottom-1.5 rotate-180 text-sm font-bold" style={{ color: 'var(--primary)' }}>
-        {display}
-      </span>
-      <span className="text-4xl font-bold" style={{ color: 'var(--ink)' }}>
-        {display}
-      </span>
+      <span className={cn('absolute top-1.5 left-2 text-sm font-bold', 'text-primary')}>{display}</span>
+      <span className={cn('absolute right-2 bottom-1.5 rotate-180 text-sm font-bold', 'text-primary')}>{display}</span>
+      <span className={cn('text-4xl font-bold', 'text-ink')}>{display}</span>
     </div>
   )
 }
@@ -97,29 +111,16 @@ function CardFront({ value }: { value: null | string }) {
 function CardJoker() {
   return (
     <div
-      className="rounded-xlf font-title absolute inset-0 flex items-center justify-center"
-      style={{
-        backfaceVisibility: 'hidden',
-        background: 'var(--surface-strong)',
-        border: '1.5px solid var(--border)',
-      }}
+      className={cn(
+        'font-title absolute inset-0 flex items-center justify-center rounded-xl border backface-hidden',
+        'bg-bg-surface-strong border-border',
+      )}
     >
-      <span className="absolute top-1.5 left-2 text-sm font-bold" style={{ color: 'var(--ink-muted)' }}>
-        ?
-      </span>
-      <span className="absolute right-2 bottom-1.5 rotate-180 text-sm font-bold" style={{ color: 'var(--ink-muted)' }}>
-        ?
-      </span>
+      <span className={cn('absolute top-1.5 left-2 text-sm font-bold', 'text-ink-muted')}>?</span>
+      <span className={cn('absolute right-2 bottom-1.5 rotate-180 text-sm font-bold', 'text-ink-muted')}>?</span>
       <div className="flex flex-col items-center gap-0.5">
-        <span className="text-4xl leading-none font-bold" style={{ color: 'var(--ink-muted)', opacity: 0.4 }}>
-          ?
-        </span>
-        <span
-          className="text-xs font-semibold tracking-widest uppercase"
-          style={{ color: 'var(--ink-muted)', opacity: 0.35 }}
-        >
-          vote
-        </span>
+        <span className={cn('text-4xl leading-none font-bold', 'text-ink-muted/40')}>?</span>
+        <span className={cn('text-xs font-semibold tracking-widest uppercase', 'text-ink-muted/35')}>vote</span>
       </div>
     </div>
   )
@@ -129,197 +130,128 @@ function CardJoker() {
 function CardVotedBack() {
   return (
     <div
-      className="absolute inset-0 flex items-center justify-center rounded-xl"
-      style={{
-        backfaceVisibility: 'hidden',
-        background: 'linear-gradient(135deg, var(--primary), var(--primary-deep))',
-      }}
+      className={cn(
+        'absolute inset-0 flex items-center justify-center rounded-xl bg-linear-to-br backface-hidden',
+        'from-amber-earth-400 to-amber-earth-600',
+      )}
     >
-      <div className="absolute inset-[6px] rounded-lg" style={{ border: '1.5px solid rgba(255,255,255,0.3)' }} />
-      <span className="relative text-xl font-bold" style={{ color: 'rgba(255,255,255,0.9)' }}>
-        ✓
-      </span>
+      <div className="absolute inset-1.5 rounded-lg border border-white/30" />
+      <span className="relative text-xl font-bold text-white/90">✓</span>
     </div>
   )
 }
 
-function PlayerCard({
-  isModerator,
-  isSelf,
-  phase,
-  player,
-  recentMsg,
-}: {
-  isModerator: boolean
-  isSelf: boolean
-  phase: GamePhase
-  player: PlayerData
-  recentMsg: ChatMessage | null
-}) {
+function PlayerCard({ isModerator, isSelf, phase, player, recentMsg }: PlayerCardProps) {
   const isRevealed = phase === 'revealed'
-  const rotation = player.voted && !isRevealed ? 'rotateY(180deg)' : 'rotateY(0deg)'
+  const hasHiddenVote = player.voted && !isRevealed
 
   return (
-    <Tooltip.Provider delay={300}>
-      <Tooltip.Root>
-        <Tooltip.Trigger
-          render={
+    <Tooltip.Root>
+      <Tooltip.Trigger
+        render={
+          <div className={cn('relative flex cursor-default flex-col items-center gap-1.5', 'perspective-[600px]')}>
+            {/* Speech bubble — floats above the card */}
+            {recentMsg ? <SpeechBubble text={recentMsg.text} /> : null}
+
+            {/* 3D flip container */}
             <div
-              className="relative flex cursor-default flex-col items-center gap-1.5"
-              style={{ perspective: '600px' }}
+              className={cn(
+                'relative h-48 w-32 transition-transform duration-600 ease-in-out transform-3d',
+                hasHiddenVote
+                  ? 'transform-[rotateY(180deg)] animate-[float-card_2.6s_ease-in-out_infinite]'
+                  : 'transform-[rotateY(0deg)]',
+              )}
             >
-              {/* Speech bubble — floats above the card */}
-              {recentMsg && <SpeechBubble text={recentMsg.text} />}
+              {/* Face A — front (no rotateY here) */}
+              <div className="absolute inset-0 backface-hidden">
+                {isRevealed ? <CardFront value={player.vote} /> : <CardJoker />}
+              </div>
 
-              {/* 3D flip container */}
-              <div
-                style={{
-                  animation: player.voted && !isRevealed ? 'float-card 2.6s ease-in-out infinite' : undefined,
-                  height: '192px',
-                  position: 'relative',
-                  transform: rotation,
-                  transformStyle: 'preserve-3d',
-                  transition: 'transform 0.6s ease',
-                  width: '128px',
-                }}
-              >
-                {/* Face A — front (no rotateY here) */}
+              {/* Face B — back (rotateY 180 applied at wrapper, not inside component) */}
+              <div className={cn('absolute inset-0 backface-hidden', 'transform-[rotateY(180deg)]')}>
+                <CardVotedBack />
+              </div>
+
+              {/* Raised hand overlay */}
+              {player.handRaised ? (
                 <div
-                  style={{
-                    backfaceVisibility: 'hidden',
-                    inset: 0,
-                    position: 'absolute',
-                  }}
+                  className={cn(
+                    'absolute inset-0 z-10 flex items-center justify-center rounded-xl backface-visible',
+                    'bg-white/85 dark:bg-black/55',
+                  )}
                 >
-                  {isRevealed ? <CardFront value={player.vote} /> : <CardJoker />}
-                </div>
-
-                {/* Face B — back (rotateY 180 applied at wrapper, not inside component) */}
-                <div
-                  style={{
-                    backfaceVisibility: 'hidden',
-                    inset: 0,
-                    position: 'absolute',
-                    transform: 'rotateY(180deg)',
-                  }}
-                >
-                  <CardVotedBack />
-                </div>
-
-                {/* Raised hand overlay */}
-                {player.handRaised && (
-                  <div
-                    className="absolute inset-0 flex items-center justify-center rounded-xl"
+                  <span
+                    className="inline-block text-[3.5rem]"
                     style={{
-                      backfaceVisibility: 'visible',
-                      background: 'rgba(255,255,255,0.88)',
-                      zIndex: 10,
+                      animation: 'wave-hand 1s ease-in-out infinite',
+                      transformOrigin: '70% 70%',
                     }}
                   >
-                    <span
-                      style={{
-                        animation: 'wave-hand 1s ease-in-out infinite',
-                        display: 'inline-block',
-                        fontSize: '3.5rem',
-                        transformOrigin: '70% 70%',
-                      }}
-                    >
-                      🤚
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Player name */}
-              <div className="flex items-center gap-1">
-                {isModerator && <Crown className="shrink-0" size={10} style={{ color: 'var(--primary)' }} />}
-                <span
-                  className="max-w-[136px] truncate text-sm font-medium"
-                  style={{
-                    color: isSelf ? 'var(--primary)' : 'var(--ink-muted)',
-                    fontWeight: isSelf ? 700 : 500,
-                  }}
-                >
-                  {player.name}
-                  {isSelf ? ' (you)' : ''}
-                </span>
-              </div>
-
-              {/* Online dot */}
-              <span
-                className="h-1.5 w-1.5 rounded-full"
-                style={{
-                  background: player.isOnline ? 'var(--success)' : '#9ca3af',
-                  marginTop: '-4px',
-                }}
-              />
+                    🤚
+                  </span>
+                </div>
+              ) : null}
             </div>
-          }
-        />
 
-        <Tooltip.Portal>
-          <Tooltip.Positioner>
-            <Tooltip.Popup
-              className="rounded-lg px-3 py-1.5 text-xs font-medium text-white shadow-lg"
-              style={{ background: 'var(--ink)', zIndex: 100 }}
-            >
-              <Tooltip.Arrow />
-              {player.name} — {player.isOnline ? 'online' : 'offline'}
-              {player.voted && !isRevealed ? ' · voted' : ''}
-              {isRevealed && player.vote ? ` · ${player.vote}` : ''}
-              {player.handRaised ? ' · ✋ raised hand' : ''}
-            </Tooltip.Popup>
-          </Tooltip.Positioner>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-    </Tooltip.Provider>
+            {/* Player name */}
+            <div className="flex items-center gap-1">
+              {isModerator ? <Crown className="text-primary shrink-0" size={10} /> : null}
+              <span
+                className={cn(
+                  'max-w-34 truncate text-sm',
+                  isSelf ? 'text-primary font-bold' : 'text-ink-muted font-medium',
+                )}
+              >
+                {player.name}
+                {isSelf ? ' (you)' : ''}
+              </span>
+            </div>
+
+            {/* Online dot */}
+            <span className={cn('-mt-1 h-1.5 w-1.5 rounded-full', player.isOnline ? 'bg-success' : 'bg-gray-400')} />
+          </div>
+        }
+      />
+
+      <Tooltip.Portal>
+        <Tooltip.Positioner>
+          <Tooltip.Popup
+            className={cn('z-100 rounded-lg px-3 py-1.5 text-xs font-medium text-white shadow-lg', 'bg-ink')}
+          >
+            <Tooltip.Arrow />
+            {player.name} — {player.isOnline ? 'online' : 'offline'}
+            {hasHiddenVote ? ' · voted' : ''}
+            {isRevealed && player.vote ? ` · ${player.vote}` : ''}
+            {player.handRaised ? ' · ✋ raised hand' : ''}
+          </Tooltip.Popup>
+        </Tooltip.Positioner>
+      </Tooltip.Portal>
+    </Tooltip.Root>
   )
 }
 
-function SpeechBubble({ text }: { text: string }) {
-  const display = text.length > 30 ? text.slice(0, 30) + '…' : text
+function SpeechBubble({ text }: SpeechBubbleProps) {
+  const display = text.length > SPEECH_BUBBLE_PREVIEW_MAX ? `${text.slice(0, SPEECH_BUBBLE_PREVIEW_MAX)}…` : text
   return (
     <div
-      style={{
-        bottom: 'calc(100% + 6px)',
-        left: '50%',
-        pointerEvents: 'none',
-        position: 'absolute',
-        transform: 'translateX(-50%)',
-        whiteSpace: 'nowrap',
-        zIndex: 50,
-      }}
+      className={cn(
+        'pointer-events-none absolute bottom-[calc(100%+6px)] left-1/2 z-50 -translate-x-1/2',
+        'whitespace-nowrap',
+      )}
     >
       <div
-        style={{
-          background: 'var(--primary)',
-          borderRadius: '10px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-          color: 'white',
-          fontSize: '10px',
-          fontWeight: 600,
-          maxWidth: '140px',
-          overflow: 'hidden',
-          padding: '4px 8px',
-          position: 'relative',
-          textOverflow: 'ellipsis',
-        }}
+        className={cn(
+          'relative max-w-35 overflow-hidden rounded-[10px] px-2 py-1 text-[10px] font-semibold text-ellipsis text-white',
+          'bg-primary shadow-[0_2px_8px_rgba(0,0,0,0.15)]',
+        )}
       >
         {display}
         {/* Triangle tail pointing down */}
         <span
-          style={{
-            borderLeft: '5px solid transparent',
-            borderRight: '5px solid transparent',
-            borderTop: '5px solid var(--primary)',
-            display: 'block',
-            height: 0,
-            left: '50%',
-            position: 'absolute',
-            top: '100%',
-            transform: 'translateX(-50%)',
-            width: 0,
-          }}
+          className={cn(
+            'absolute top-full left-1/2 block h-0 w-0 -translate-x-1/2 border-x-[5px] border-t-[5px]',
+            'border-t-primary border-x-transparent',
+          )}
         />
       </div>
     </div>

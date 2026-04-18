@@ -8,6 +8,7 @@ const meta: Meta<typeof VoteResults> = {
     isModerator: false,
     onEndSession: () => {},
     onNextStory: () => {},
+    onReestimate: () => {},
   },
   component: VoteResults,
   parameters: {
@@ -101,4 +102,16 @@ export const Split: Story = {
 
 export const AsModerator: Story = {
   args: { isModerator: true, players: splitPlayers },
+}
+
+export const AsModeratorConsensusSaveFlow: Story = {
+  args: { isConsensus: true, isModerator: true, players: consensusPlayers },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Estimate starts prefilled from consensus. Use the estimate popover to pick a value, then click Next Story.',
+      },
+    },
+  },
 }

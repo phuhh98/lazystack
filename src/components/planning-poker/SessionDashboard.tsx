@@ -1,21 +1,19 @@
-import { Popover } from '@base-ui/react'
 import { Pencil, Trophy } from 'lucide-react'
 
 import type { StoryItem } from '@/hooks/usePlanningPoker'
 
 import IslandShell from '@/components/basic/IslandShell'
-
-const CARD_VALUES = ['1', '2', '3', '5', '8', '13', '21', '?', '☕']
+import SetCardValuePopover from '@/components/planning-poker/SetCardValuePopover'
 
 interface SessionDashboardProps {
-  isModerator: boolean
-  onSetEstimate: (storyId: string, vote: string) => void
-  storyList: StoryItem[]
+  readonly isModerator: boolean
+  readonly onSetEstimate: (storyId: string, vote: string) => void
+  readonly storyList: StoryItem[]
 }
 
 export default function SessionDashboard({ isModerator, onSetEstimate, storyList }: SessionDashboardProps) {
   const completed = storyList.filter((s) => s.estimatedVote)
-  const numeric = completed.map((s) => parseInt(s.estimatedVote!, 10)).filter((n) => !isNaN(n))
+  const numeric = completed.map((s) => Number.parseInt(s.estimatedVote!, 10)).filter((n) => !Number.isNaN(n))
   const avg = numeric.length > 0 ? numeric.reduce((a, b) => a + b, 0) / numeric.length : null
 
   return (
@@ -97,48 +95,16 @@ export default function SessionDashboard({ isModerator, onSetEstimate, storyList
                   </td>
                   {isModerator && (
                     <td className="px-5 py-3 text-center">
-                      <Popover.Root>
-                        <Popover.Trigger
-                          className="rounded p-1.5 transition-colors"
-                          style={{ color: 'var(--ink-muted)' }}
-                          title="Edit estimate"
-                        >
-                          <Pencil size={14} />
-                        </Popover.Trigger>
-                        <Popover.Portal>
-                          <Popover.Positioner>
-                            <Popover.Popup
-                              className="rounded-2xl p-4 shadow-xl"
-                              style={{
-                                background: 'var(--surface-strong)',
-                                border: '1px solid var(--border)',
-                                zIndex: 200,
-                              }}
-                            >
-                              <Popover.Arrow />
-                              <p className="island-kicker mb-3" style={{ color: 'var(--ink-muted)' }}>
-                                Set estimate
-                              </p>
-                              <div className="flex flex-wrap gap-2">
-                                {CARD_VALUES.map((v) => (
-                                  <Popover.Close
-                                    className="flex h-9 w-9 items-center justify-center rounded-lg border text-sm font-bold transition-colors"
-                                    key={v}
-                                    onClick={() => onSetEstimate(story.id, v)}
-                                    style={{
-                                      background: story.estimatedVote === v ? 'var(--primary)' : 'var(--surface)',
-                                      borderColor: story.estimatedVote === v ? 'var(--primary)' : 'var(--border)',
-                                      color: story.estimatedVote === v ? 'white' : 'var(--ink)',
-                                    }}
-                                  >
-                                    {v}
-                                  </Popover.Close>
-                                ))}
-                              </div>
-                            </Popover.Popup>
-                          </Popover.Positioner>
-                        </Popover.Portal>
-                      </Popover.Root>
+                      <SetCardValuePopover
+                        currentValue={story.estimatedVote ?? null}
+                        onSelectValue={(value) => onSetEstimate(story.id, value)}
+                        title="Set estimate"
+                        triggerAriaLabel="Edit estimate"
+                        triggerClassName="text-ink-muted"
+                        triggerTitle="Edit estimate"
+                      >
+                        <Pencil size={14} />
+                      </SetCardValuePopover>
                     </td>
                   )}
                 </tr>

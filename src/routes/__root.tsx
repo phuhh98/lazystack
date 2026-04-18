@@ -2,6 +2,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { createRootRoute, HeadContent, Scripts, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
+import Container from '@/components/basic/Container'
 import Content from '@/components/basic/Content'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -40,19 +41,22 @@ function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="min-h-100vh w-100vw bg-bg-base dark:bg-dark-teal-900 flex flex-col">
-        <Header />
-        <Content
-          className={cn(
-            'dark:bg-dark-teal-600/10 bg-amber-200/10',
-            'shadow-dark-teal-900/20 shadow-xl dark:shadow-amber-300/20',
-            'grow',
-            isGameRoom ? 'overflow-hidden' : 'overflow-y-auto',
-          )}
-        >
-          {children}
-        </Content>
-        <FooterConditional />
+      <body className="min-h-100vh w-100vw bg-bg-base dark:bg-dark-teal-900">
+        <Container className="flex min-h-screen flex-col" disableDefaultClasses>
+          <Header />
+          <Content
+            className={cn(
+              'dark:bg-dark-teal-600/10 bg-amber-200/10',
+              'shadow-dark-teal-900/20 shadow-xl dark:shadow-amber-300/20',
+              'grow',
+              isGameRoom ? 'overflow-hidden' : 'overflow-y-auto',
+            )}
+          >
+            {children}
+          </Content>
+          <FooterConditional />
+        </Container>
+
         <TanStackDevtools
           config={{ position: 'bottom-right' }}
           plugins={[

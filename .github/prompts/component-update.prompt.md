@@ -23,6 +23,7 @@ Execution Requirements:
 - Prefer semantic theme token usage (for example utility tokens like `text-ink`, `bg-bg-surface`, `border-border`) when available.
 - Avoid explicit hardcoded theme variable usage in component code (for example direct `var(--token)` inline style references) unless no semantic option exists.
 - Keep TypeScript fully correct under strict mode (verbatimModuleSyntax, noUnusedLocals, noUnusedParameters).
+- Before manually fixing lint issues, run `eslint --fix` on changed files to auto-resolve all fixable issues first, then handle remaining issues manually.
 - For generic-ready components, prefer function declaration style `function ComponentName(props: Props)`.
 - Prefer declaration patterns that can be extended to `function ComponentName<T>(props: Props<T>)` without changing call sites.
 - If the component is generic/reusable, avoid domain-specific hooks and keep logic minimal.

@@ -53,6 +53,7 @@ export default function RightSidebar({
   players,
   timerDuration,
 }: RightSidebarProps) {
+  const sidebarRootRef = useRef<HTMLDivElement>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<Tab>('chat')
   const [input, setInput] = useState('')
@@ -98,27 +99,31 @@ export default function RightSidebar({
     setIsOpen(true)
   }
 
+  function handleToggleOpen() {
+    setIsOpen(!isOpen)
+  }
+
   const allPresets = codeWord ? [codeWord, ...PRESETS] : PRESETS
 
   return (
-    <Drawer.Root modal={false} onOpenChange={setIsOpen} open={isOpen}>
-      <div className="border-border flex h-full shrink-0 border-l">
+    <Drawer.Root disablePointerDismissal modal={false} onOpenChange={setIsOpen} open={isOpen}>
+      <div className="border-border relative flex h-full shrink-0 border-l" ref={sidebarRootRef}>
         <RightSidebarIconRail
           activeTab={activeTab}
           isModerator={isModerator}
           isOpen={isOpen}
           myHandRaised={myHandRaised}
           onSelectTab={handleSelectTab}
-          onToggleOpen={() => setIsOpen((value) => !value)}
+          onToggleOpen={handleToggleOpen}
           raisedCount={raisedPlayers.length}
           timerDuration={timerDuration}
           unread={unread}
         />
 
-        <Drawer.Portal>
+        <Drawer.Portal container={sidebarRootRef}>
           <Drawer.Content
             className={cn(
-              'bg-bg-surface-strong flex h-full flex-col overflow-hidden transition-[width] duration-200',
+              'bg-bg-surface-strong/10 flex h-full flex-col overflow-hidden transition-[width] duration-200',
               isOpen ? 'border-border w-60 border-l' : 'w-0 border-l-0',
             )}
             onClick={(e) => e.stopPropagation()}

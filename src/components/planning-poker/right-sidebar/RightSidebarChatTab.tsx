@@ -1,10 +1,12 @@
-import type { ComponentProps, ReactNode, RefObject } from 'react'
+import type { ComponentProps, KeyboardEvent, ReactNode, RefObject } from 'react'
 
+import { Form, Input } from '@base-ui/react'
 import { Send } from 'lucide-react'
 
 import type { ChatMessage } from '@/hooks/usePlanningPoker'
 
 import Button from '@/components/basic/Button'
+import Container from '@/components/basic/Container'
 import Typography from '@/components/basic/Typography'
 import RightSidebarCodeWordEditor from '@/components/planning-poker/right-sidebar/RightSidebarCodeWordEditor'
 import { cn } from '@/lib/utils/styles'
@@ -36,6 +38,15 @@ export default function RightSidebarChatTab({
   onSubmit,
   playerId,
 }: RightSidebarChatTabProps) {
+  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== 'Enter') {
+      return
+    }
+
+    event.preventDefault()
+    onSend(input)
+  }
+
   let codeWordSection: ReactNode = null
 
   if (onSetCodeWord) {
@@ -60,40 +71,48 @@ export default function RightSidebarChatTab({
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto px-3 py-2">
+      <Container as="div" className="flex-1 overflow-y-auto px-3 py-2" disableDefaultClasses>
         {chat.length === 0 ? (
           <Typography as="p" className="text-ink-muted py-4 text-center text-xs">
             No messages yet. Say hello!
           </Typography>
         ) : (
-          <div className="flex flex-col gap-2">
+          <Container as="div" className="flex flex-col gap-2" disableDefaultClasses>
             {chat.map((message) => {
               const isSelf = message.playerId === playerId
 
               return (
-                <div className={cn('flex flex-col', isSelf ? 'items-end' : 'items-start')} key={message.id}>
+                <Container
+                  as="div"
+                  className={cn('flex flex-col', isSelf ? 'items-end' : 'items-start')}
+                  disableDefaultClasses
+                  key={message.id}
+                >
                   <Typography as="span" className="text-ink-muted mb-0.5 text-[10px] leading-none">
                     {message.name}
                   </Typography>
-                  <div
+                  <Typography
+                    as="p"
                     className={cn(
                       'max-w-[85%] rounded-2xl px-2.5 py-1.5 text-xs',
                       isSelf ? 'bg-primary text-white' : 'bg-bg-surface text-ink border-border border',
                     )}
                   >
                     {message.text}
-                  </div>
-                </div>
+                  </Typography>
+                </Container>
               )
             })}
             <div ref={bottomRef} />
-          </div>
+          </Container>
         )}
-      </div>
+      </Container>
 
-      <div className="border-border shrink-0 border-t px-3 pt-2 pb-1">{codeWordSection}</div>
+      <Container as="div" className="border-border shrink-0 border-t px-3 pt-2 pb-1" disableDefaultClasses>
+        {codeWordSection}
+      </Container>
 
-      <div className="flex shrink-0 flex-wrap gap-1 px-3 pt-1.5 pb-1">
+      <Container as="div" className="flex shrink-0 flex-wrap gap-1 px-3 pt-1.5 pb-1" disableDefaultClasses>
         {allPresets.map((preset, index) => {
           const isCodeWordPreset = index === 0 && codeWord.length > 0
 
@@ -113,12 +132,13 @@ export default function RightSidebarChatTab({
             </Button>
           )
         })}
-      </div>
+      </Container>
 
-      <form className="flex shrink-0 gap-1.5 px-3 pt-2 pb-4" onSubmit={onSubmit}>
-        <input
+      <Form className="flex shrink-0 gap-1.5 px-3 pt-2 pb-4" onSubmit={onSubmit}>
+        <Input
           className="bg-bg-surface text-ink border-border min-w-0 flex-1 rounded-xl border px-2.5 py-1.5 text-xs outline-none"
           onChange={(event) => onInputChange(event.target.value)}
+          onKeyDown={handleInputKeyDown}
           placeholder="Type a message..."
           type="text"
           value={input}
@@ -130,7 +150,7 @@ export default function RightSidebarChatTab({
         >
           <Send className="h-3.25 w-3.25" />
         </Button>
-      </form>
+      </Form>
     </>
   )
 }

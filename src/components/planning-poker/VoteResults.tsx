@@ -1,15 +1,21 @@
-import { useState } from 'react'
+import { ArrowRight, RotateCcw, SquareCheckBig, SquarePen, SquareX } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 import type { PlayerData } from '@/hooks/usePlanningPoker'
 
+import Button from '@/components/basic/Button'
+import Container from '@/components/basic/Container'
 import IslandShell from '@/components/basic/IslandShell'
+import Typography from '@/components/basic/Typography'
+import SetCardValuePopover from '@/components/planning-poker/SetCardValuePopover'
 
 export interface VoteResultsProps {
-  isConsensus: boolean
-  isModerator: boolean
-  onEndSession: () => void
-  onNextStory: (estimateOverride?: string) => void
-  players: PlayerData[]
+  readonly isConsensus: boolean
+  readonly isModerator: boolean
+  readonly onEndSession: () => void
+  readonly onNextStory: (estimateOverride?: string) => void
+  readonly onReestimate: () => void
+  readonly players: PlayerData[]
 }
 
 function computeStats(players: PlayerData[]) {
@@ -21,7 +27,7 @@ function computeStats(players: PlayerData[]) {
     tally.set(key, (tally.get(key) ?? 0) + 1)
   }
 
-  const numericVotes = votedPlayers.map((p) => parseInt(p.vote!, 10)).filter((n) => !isNaN(n))
+  const numericVotes = votedPlayers.map((p) => Number.parseInt(p.vote!, 10)).filter((n) => !Number.isNaN(n))
 
   const average = numericVotes.length > 0 ? numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length : null
 
@@ -35,10 +41,11 @@ export default function VoteResults({
   isModerator,
   onEndSession,
   onNextStory,
+  onReestimate,
   players,
 }: VoteResultsProps) {
   const { average, tally } = computeStats(players)
-  const [estimateEdit, setEstimateEdit] = useState('')
+  const [selectedEstimateOverride, setSelectedEstimateOverride] = useState('')
 
   const sortedEntries = [...tally.entries()].sort((a, b) => {
     const ai = CARD_ORDER.indexOf(a[0])
@@ -55,96 +62,127 @@ export default function VoteResults({
     return ''
   })()
 
+  const canSubmitNextStory = selectedEstimateOverride.length > 0
+  const hasQuestionVote = tally.has('?')
+
+  useEffect(() => {
+    setSelectedEstimateOverride(suggestedEstimate)
+  }, [suggestedEstimate])
+
   function handleNextStory() {
-    const override = estimateEdit.trim() || suggestedEstimate || undefined
+    const override = selectedEstimateOverride
+
+    if (!override) {
+      return
+    }
+
     onNextStory(override)
-    setEstimateEdit('')
+    setSelectedEstimateOverride('')
   }
 
   return (
     <IslandShell className="shrink-0 rounded-xl p-3">
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <p className="island-kicker">Results</p>
+      <Container as="div" className="mb-3 flex flex-wrap items-center gap-2" disableDefaultClasses>
+        <Typography as="p" className="island-kicker">
+          Results
+        </Typography>
         {isConsensus && (
-          <span className="rounded-full bg-[var(--success)] px-3 py-1 text-xs font-semibold text-white">
+          <Typography as="span" className="bg-success rounded-full px-3 py-1 text-xs font-semibold text-white">
             Consensus!
-          </span>
+          </Typography>
         )}
         {average !== null && (
-          <span className="rounded-full border border-[var(--chip-border)] bg-[var(--chip-bg)] px-3 py-1 text-sm font-semibold text-[var(--ink)]">
+          <Typography
+            as="span"
+            className="bg-chip-bg border-chip-border text-ink rounded-full border px-3 py-1 text-sm font-semibold"
+          >
             Avg: {average % 1 === 0 ? average : average.toFixed(1)}
-          </span>
+          </Typography>
         )}
-      </div>
+      </Container>
 
       {/* Vote histogram */}
       {sortedEntries.length > 0 ? (
-        <div className="mb-3 flex flex-wrap items-end gap-2">
+        <Container as="div" className="mb-3 flex flex-wrap items-end gap-2" disableDefaultClasses>
           {sortedEntries.map(([value, count]) => (
-            <div className="flex flex-col items-center gap-1" key={value}>
-              <div className="flex flex-col items-center gap-0.5">
-                <span className="text-xs font-medium text-[var(--ink-muted)]">{count}</span>
+            <Container as="div" className="flex flex-col items-center gap-1" disableDefaultClasses key={value}>
+              <Container as="div" className="flex flex-col items-center gap-0.5" disableDefaultClasses>
+                <Typography as="span" className="text-ink-muted text-xs font-medium">
+                  {count}
+                </Typography>
                 <div
-                  className="w-8 rounded-t-lg bg-[var(--primary)] transition-all duration-500"
+                  className="bg-primary w-8 rounded-t-lg transition-all duration-500"
                   style={{
                     height: `${Math.max(6, (count / maxCount) * 60)}px`,
                   }}
                 />
-              </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--primary)] bg-[rgba(204,136,83,0.12)] text-sm font-bold text-[var(--primary)]">
+              </Container>
+              <Typography
+                as="div"
+                className="border-primary bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg border text-sm font-bold"
+              >
                 {value}
-              </div>
-            </div>
+              </Typography>
+            </Container>
           ))}
-        </div>
+        </Container>
       ) : (
-        <p className="mb-3 text-sm text-[var(--ink-muted)]">No votes recorded.</p>
+        <Typography as="p" className="text-ink-muted mb-3 text-sm">
+          No votes recorded.
+        </Typography>
       )}
 
       {isModerator && (
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          {/* Editable estimate — pre-filled with auto-suggestion */}
-          <div className="flex items-center gap-1.5">
-            <label className="text-[10px] font-semibold tracking-wide uppercase" style={{ color: 'var(--ink-muted)' }}>
+        <Container as="div" className="flex flex-wrap items-center justify-between gap-2" disableDefaultClasses>
+          <Container as="div" className="flex items-center gap-1.5" disableDefaultClasses>
+            <Typography as="span" className="text-ink-muted text-[10px] font-semibold tracking-wide uppercase">
               Estimate
-            </label>
-            <input
-              className="w-16 rounded-lg border px-2 py-1 text-xs font-bold outline-none"
-              maxLength={6}
-              onChange={(e) => setEstimateEdit(e.target.value)}
-              placeholder={suggestedEstimate || '—'}
-              style={{
-                background: 'var(--surface)',
-                borderColor: estimateEdit ? 'var(--primary)' : 'var(--border)',
-                color: 'var(--ink)',
-              }}
-              type="text"
-              value={estimateEdit}
-            />
-          </div>
+            </Typography>
+            <SetCardValuePopover
+              currentValue={selectedEstimateOverride || null}
+              onSelectValue={setSelectedEstimateOverride}
+              title="Set estimate"
+              triggerAriaLabel="Edit estimate"
+              triggerClassName="bg-bg-surface border-border text-ink flex items-center gap-1 rounded-xl border px-2.5 py-1"
+              triggerTitle="Edit estimate"
+            >
+              <span className="text-xs font-bold">{selectedEstimateOverride || '—'}</span>
+              <SquarePen className="h-3.5 w-3.5" />
+            </SetCardValuePopover>
+          </Container>
 
-          <div className="flex flex-wrap gap-2">
-            <button
-              className="rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors"
+          <Container as="div" className="flex flex-wrap gap-2" disableDefaultClasses>
+            <Button
+              className="gap-1.5 rounded-xl px-3 py-1.5 text-xs"
               onClick={onEndSession}
-              style={{
-                borderColor: 'var(--border)',
-                color: 'var(--ink-muted)',
-              }}
               type="button"
+              variant="outline"
             >
+              <SquareX className="h-3.5 w-3.5" />
               End Session
-            </button>
-            <button
-              className="rounded-xl px-4 py-1.5 text-xs font-semibold text-white transition-colors"
+            </Button>
+            <Button
+              className="gap-1.5 rounded-xl px-3 py-1.5 text-xs"
+              disabled={!hasQuestionVote}
+              onClick={onReestimate}
+              type="button"
+              variant="outline"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              Re-estimate
+            </Button>
+            <Button
+              className="gap-1.5 rounded-xl px-4 py-1.5 text-xs"
+              disabled={!canSubmitNextStory}
               onClick={handleNextStory}
-              style={{ background: 'var(--primary)' }}
               type="button"
             >
+              <SquareCheckBig className="h-3.5 w-3.5" />
               Next Story
-            </button>
-          </div>
-        </div>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </Container>
+        </Container>
       )}
     </IslandShell>
   )

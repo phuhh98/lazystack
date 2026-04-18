@@ -19,7 +19,22 @@ vi.mock('@/components/planning-poker/PokerHand', () => ({
 }))
 
 vi.mock('@/components/planning-poker/VoteResults', () => ({
-  default: () => <div data-testid="vote-results" />,
+  default: ({
+    onNextStory,
+    onReestimate,
+  }: {
+    onNextStory: (estimatedVote?: string) => void
+    onReestimate: () => void
+  }) => (
+    <div>
+      <button data-testid="vote-results-next-story" onClick={() => onNextStory('13')} type="button">
+        VoteResults Next Story
+      </button>
+      <button data-testid="vote-results-reestimate" onClick={onReestimate} type="button">
+        VoteResults Re-estimate
+      </button>
+    </div>
+  ),
 }))
 
 vi.mock('@/components/planning-poker/CountdownClock', () => ({
@@ -115,6 +130,49 @@ describe('PlanningPokerGameContent', () => {
     await user.click(screen.getByRole('button', { name: 'Start' }))
 
     expect(startVoting).toHaveBeenCalledWith('API pagination')
+    expect(startVoting).toHaveBeenCalledTimes(1)
+  })
+
+  it('forwards estimated vote from vote results to nextStory', async () => {
+    const user = userEvent.setup()
+    const nextStory = vi.fn()
+
+    render(
+      <PlanningPokerGameContent
+        {...baseProps}
+        gameState={{
+          ...gameState,
+          phase: 'revealed',
+        }}
+        nextStory={nextStory}
+      />,
+    )
+
+    await user.click(screen.getByTestId('vote-results-next-story'))
+
+    expect(nextStory).toHaveBeenCalledWith('13')
+    expect(nextStory).toHaveBeenCalledTimes(1)
+  })
+
+  it('forwards re-estimate action to startVoting with current story', async () => {
+    const user = userEvent.setup()
+    const startVoting = vi.fn()
+
+    render(
+      <PlanningPokerGameContent
+        {...baseProps}
+        gameState={{
+          ...gameState,
+          phase: 'revealed',
+          story: 'Stabilize reconnection',
+        }}
+        startVoting={startVoting}
+      />,
+    )
+
+    await user.click(screen.getByTestId('vote-results-reestimate'))
+
+    expect(startVoting).toHaveBeenCalledWith('Stabilize reconnection')
     expect(startVoting).toHaveBeenCalledTimes(1)
   })
 })

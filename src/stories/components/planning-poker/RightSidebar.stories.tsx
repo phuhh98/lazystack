@@ -33,6 +33,27 @@ type RightSidebarProps = ComponentProps<typeof RightSidebar>
 
 type Story = StoryObj<typeof RightSidebar>
 
+function AutoOpenSidebarConstrainedStory(props: RightSidebarProps) {
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const chatButton = rootRef.current?.querySelector<HTMLButtonElement>('button[aria-label="Open chat"]')
+    chatButton?.click()
+  }, [])
+
+  return (
+    <div className="bg-bg-surface h-screen w-full p-8">
+      <div className="border-border bg-bg-surface-strong relative ml-auto h-80 w-80 overflow-hidden rounded-2xl border shadow-sm">
+        <div className="text-ink-muted absolute top-2 left-3 text-[10px] font-semibold tracking-wide uppercase">
+          Constrained panel
+        </div>
+        <div className="absolute top-7 right-0 bottom-0 left-0" ref={rootRef}>
+          <RightSidebar {...props} />
+        </div>
+      </div>
+    </div>
+  )
+}
 function AutoOpenSidebarStory(props: RightSidebarProps) {
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -178,4 +199,19 @@ export const CollapsedWithUnread: Story = {
     players: samplePlayers,
     timerDuration: 15,
   },
+}
+/**
+ * Sidebar opened inside a constrained container to verify local portal mounting.
+ */
+export const ConstrainedContainerOpen: Story = {
+  args: {
+    chat: sampleMessages,
+    codeWord: 'room-42',
+    isModerator: true,
+    onSetCodeWord: () => {},
+    playerId: 'p1',
+    players: samplePlayers,
+    timerDuration: 15,
+  },
+  render: (args) => <AutoOpenSidebarConstrainedStory {...args} />,
 }

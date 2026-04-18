@@ -15,6 +15,12 @@ interface ParticipantStorySidebarProps {
   readonly storyList: StoryItem[]
 }
 
+const STORY_ITEM_CLASS_BY_STATE = {
+  active: 'bg-primary/10 border-primary',
+  estimated: 'bg-primary/5 border-primary',
+  idle: 'bg-bg-surface border-border',
+} as const
+
 export default function ParticipantStorySidebar({
   currentStory,
   onlineCount,
@@ -111,12 +117,8 @@ export default function ParticipantStorySidebar({
 
 function getStoryItemClasses(isActive: boolean, estimatedVote?: string) {
   if (isActive) {
-    return 'bg-primary/10 border-primary'
+    return STORY_ITEM_CLASS_BY_STATE.active
   }
 
-  if (estimatedVote) {
-    return 'bg-primary/5 border-primary'
-  }
-
-  return 'bg-bg-surface border-border'
+  return estimatedVote ? STORY_ITEM_CLASS_BY_STATE.estimated : STORY_ITEM_CLASS_BY_STATE.idle
 }

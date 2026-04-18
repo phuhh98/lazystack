@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
 import type { GameState, PlayerData, StoryItem } from '@/hooks/usePlanningPoker'
@@ -85,5 +86,35 @@ describe('PlanningPokerGameContent', () => {
     render(<PlanningPokerGameContent {...baseProps} cards={overrideCards} />)
 
     expect(screen.getByTestId('card-deck')).toHaveAttribute('data-cards', overrideCards.join(','))
+  })
+
+  it('starts ad-hoc story in lobby mode from moderator controls', async () => {
+    const user = userEvent.setup()
+    const startVoting = vi.fn()
+
+    render(
+      <PlanningPokerGameContent
+        {...baseProps}
+        gameState={{
+          ...gameState,
+          phase: 'lobby',
+          story: '',
+        }}
+        startVoting={startVoting}
+        storyList={[
+          {
+            id: 's2',
+            title: 'Existing backlog item',
+          },
+        ]}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Ad-hoc…' }))
+    await user.type(screen.getByPlaceholderText('Enter story name…'), '  API pagination  ')
+    await user.click(screen.getByRole('button', { name: 'Start' }))
+
+    expect(startVoting).toHaveBeenCalledWith('API pagination')
+    expect(startVoting).toHaveBeenCalledTimes(1)
   })
 })

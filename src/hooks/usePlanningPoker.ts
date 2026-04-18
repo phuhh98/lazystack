@@ -344,10 +344,24 @@ export function usePlanningPoker(roomId: string): UsePlanningPokerReturn {
   const startVoting = useCallback((story: string) => {
     const gm = gameMapRef.current
     const pm = playersMapRef.current
+    const sl = storyListRef.current
     const ydoc = ydocRef.current
     if (!gm || !pm || !ydoc) return
+
+    const storyTitle = story.trim()
+    if (!storyTitle) return
+
     ydoc.transact(() => {
-      gm.set('story', story)
+      // Ad-hoc start should still appear in the shared story sidebar.
+      if (sl) {
+        const hasUnestimatedMatch = sl.toArray().some((item) => item.title === storyTitle && !item.estimatedVote)
+
+        if (!hasUnestimatedMatch) {
+          sl.push([{ id: crypto.randomUUID(), title: storyTitle }])
+        }
+      }
+
+      gm.set('story', storyTitle)
       gm.set('phase', 'voting')
       gm.set('timerStartedAt', 0) // timer must be started manually
       pm.forEach((record, id) => {

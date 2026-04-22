@@ -20,13 +20,24 @@ describe('SessionDashboard Component', () => {
 
   it('displays total stories count', () => {
     render(<SessionDashboard isModerator={false} onSetEstimate={() => {}} storyList={mockStories} />)
-    expect(screen.getByText('Total')).toBeInTheDocument()
+    expect(screen.getByText('Stories')).toBeInTheDocument()
     expect(screen.getAllByText(mockStories.length.toString()).length).toBeGreaterThan(0)
   })
 
   it('displays estimated stories count', () => {
     render(<SessionDashboard isModerator={false} onSetEstimate={() => {}} storyList={mockStories} />)
     expect(screen.getByText('Estimated')).toBeInTheDocument()
+  })
+
+  it('displays total committed story points', () => {
+    render(<SessionDashboard isModerator={false} onSetEstimate={() => {}} storyList={mockStories} />)
+    expect(screen.getByText('Total Committed SP')).toBeInTheDocument()
+    expect(screen.getByText('16')).toBeInTheDocument()
+  })
+
+  it('displays avg story point label', () => {
+    render(<SessionDashboard isModerator={false} onSetEstimate={() => {}} storyList={mockStories} />)
+    expect(screen.getByText('AVG Story point')).toBeInTheDocument()
   })
 
   it('displays story titles', () => {

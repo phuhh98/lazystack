@@ -33,7 +33,7 @@ export default function SetCardValuePopover({
       <Popover.Trigger
         aria-label={triggerAriaLabel}
         className={cn(
-          'text-ink-muted hover:text-ink focus-visible:ring-primary rounded-lg p-1.5 transition-colors focus-visible:ring-2 focus-visible:outline-none',
+          'text-ink-muted hover:text-ink focus-visible:ring-primary cursor-pointer rounded-lg p-1.5 transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed',
           triggerClassName,
         )}
         title={triggerTitle ?? triggerAriaLabel}
@@ -58,7 +58,7 @@ export default function SetCardValuePopover({
                   <Popover.Close
                     aria-label={`Set estimate to ${value}`}
                     className={cn(
-                      'text-ink bg-bg-surface border-border hover:border-primary/50 flex h-9 w-9 items-center justify-center rounded-lg border text-sm font-bold transition-colors',
+                      'text-ink bg-bg-surface border-border/50 hover:border-primary flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border text-sm font-bold transition-colors disabled:cursor-not-allowed',
                       isSelected && 'bg-primary border-primary hover:border-primary text-white',
                     )}
                     key={value}

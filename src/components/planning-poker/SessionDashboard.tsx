@@ -14,6 +14,7 @@ interface SessionDashboardProps {
 export default function SessionDashboard({ isModerator, onSetEstimate, storyList }: SessionDashboardProps) {
   const completed = storyList.filter((s) => s.estimatedVote)
   const numeric = completed.map((s) => Number.parseInt(s.estimatedVote!, 10)).filter((n) => !Number.isNaN(n))
+  const totalCommittedStoryPoints = numeric.reduce((sum, points) => sum + points, 0)
   const avg = numeric.length > 0 ? numeric.reduce((a, b) => a + b, 0) / numeric.length : null
 
   return (
@@ -29,7 +30,7 @@ export default function SessionDashboard({ isModerator, onSetEstimate, storyList
       {/* Stats */}
       <div className="flex flex-wrap gap-4">
         <IslandShell className="rounded-2xl px-5 py-3 text-center" style={{ minWidth: '120px' }}>
-          <p className="island-kicker mb-1">Total</p>
+          <p className="island-kicker mb-1">Stories</p>
           <p className="text-2xl font-bold" style={{ color: 'var(--ink)' }}>
             {storyList.length}
           </p>
@@ -40,9 +41,15 @@ export default function SessionDashboard({ isModerator, onSetEstimate, storyList
             {completed.length}
           </p>
         </IslandShell>
+        <IslandShell className="rounded-2xl px-5 py-3 text-center" style={{ minWidth: '120px' }}>
+          <p className="island-kicker mb-1">Total Committed SP</p>
+          <p className="text-2xl font-bold" style={{ color: 'var(--primary-deep)' }}>
+            {totalCommittedStoryPoints}
+          </p>
+        </IslandShell>
         {avg !== null && (
           <IslandShell className="rounded-2xl px-5 py-3 text-center" style={{ minWidth: '120px' }}>
-            <p className="island-kicker mb-1">Avg</p>
+            <p className="island-kicker mb-1">AVG Story point</p>
             <p className="text-2xl font-bold" style={{ color: 'var(--success)' }}>
               {avg % 1 === 0 ? avg : avg.toFixed(1)}
             </p>
@@ -100,7 +107,7 @@ export default function SessionDashboard({ isModerator, onSetEstimate, storyList
                         onSelectValue={(value) => onSetEstimate(story.id, value)}
                         title="Set estimate"
                         triggerAriaLabel="Edit estimate"
-                        triggerClassName="text-ink-muted"
+                        triggerClassName="text-ink-muted cursor-pointer"
                         triggerTitle="Edit estimate"
                       >
                         <Pencil size={14} />

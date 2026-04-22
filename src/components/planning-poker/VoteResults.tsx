@@ -94,11 +94,7 @@ export default function VoteResults({
   }
 
   function handleEndSessionClick() {
-    if (allStoriesVoted) {
-      setShowEndSessionModal(true)
-    } else {
-      onEndSession()
-    }
+    setShowEndSessionModal(true)
   }
 
   function handleConfirmEndSession() {
@@ -253,7 +249,9 @@ export default function VoteResults({
                 End Session?
               </Typography>
               <Typography as="p" className="text-ink-muted text-sm">
-                All stories have been estimated. Are you sure you want to end this session?
+                {allStoriesVoted
+                  ? 'All stories have been estimated. Are you sure you want to end this session?'
+                  : 'This will end the session now, even with unestimated stories. Continue?'}
               </Typography>
             </div>
 

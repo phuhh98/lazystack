@@ -198,6 +198,62 @@ describe('VoteResults', () => {
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
 
+  it('shows confirmation modal when normal End Session is clicked before all stories are estimated', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <VoteResults
+        currentStory="Story 2"
+        isConsensus={false}
+        isModerator={true}
+        onEndSession={() => {}}
+        onNextStory={() => {}}
+        onReestimate={() => {}}
+        players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
+        storyList={[
+          { estimatedVote: '5', id: '1', title: 'Story 1' },
+          { estimatedVote: null, id: '2', title: 'Story 2' },
+          { estimatedVote: null, id: '3', title: 'Story 3' },
+        ]}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /^End Session$/ }))
+
+    expect(screen.getByRole('heading', { name: 'End Session?' })).toBeInTheDocument()
+    expect(
+      screen.getByText('This will end the session now, even with unestimated stories. Continue?'),
+    ).toBeInTheDocument()
+  })
+
+  it('does not end session until Confirm End is clicked in normal end-session flow', async () => {
+    const user = userEvent.setup()
+    const onEndSession = vi.fn()
+
+    render(
+      <VoteResults
+        currentStory="Story 2"
+        isConsensus={false}
+        isModerator={true}
+        onEndSession={onEndSession}
+        onNextStory={() => {}}
+        onReestimate={() => {}}
+        players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
+        storyList={[
+          { estimatedVote: '5', id: '1', title: 'Story 1' },
+          { estimatedVote: null, id: '2', title: 'Story 2' },
+          { estimatedVote: null, id: '3', title: 'Story 3' },
+        ]}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /^End Session$/ }))
+    expect(onEndSession).not.toHaveBeenCalled()
+
+    await user.click(screen.getByRole('button', { name: 'Confirm End' }))
+    expect(onEndSession).toHaveBeenCalledTimes(1)
+  })
+
   it('calls onEndSession when Confirm End is clicked in modal', async () => {
     const user = userEvent.setup()
     const onEndSession = vi.fn()

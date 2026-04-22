@@ -51,7 +51,7 @@ When to use this file:
 - `SetCardValuePopover` (`src/components/planning-poker/SetCardValuePopover.tsx`): reusable estimate picker popover for choosing planning card values from the standard deck.
 - `SessionDashboard` (`src/components/planning-poker/SessionDashboard.tsx`): end-of-session summary view with completion stats (stories, estimated count, total committed story points, average story point) and estimate editing.
 - `StorySidebar` (`src/components/planning-poker/StorySidebar.tsx`): moderator story sidebar with add/reorder/remove/select actions and room copy affordance.
-- `VoteResults` (`src/components/planning-poker/VoteResults.tsx`): reveal-phase results, tally, average display, and moderator actions with shared popover estimate editing plus a conditional re-estimate action when any vote is `?`. In final-story flow, End Session confirmation can persist the current estimate before closing, and Add Adhoc emits the selected estimate so parent flow can immediately create/start a new ad-hoc story.
+- `VoteResults` (`src/components/planning-poker/VoteResults.tsx`): reveal-phase results, tally, average display, and moderator actions with shared popover estimate editing plus a conditional re-estimate action when any vote is `?`. End Session now consistently uses a confirmation modal in both normal and final-story flows; in final-story flow confirmation can persist the current estimate before closing, and Add Adhoc emits the selected estimate so parent flow can immediately create/start a new ad-hoc story.
 
 ## Related Hooks/Stores
 

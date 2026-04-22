@@ -40,7 +40,7 @@ When to use this file:
 - `Confetti` (`src/components/planning-poker/Confetti.tsx`): celebratory confetti/emoji overlay with timed auto-dismiss.
 - `ParticipantStorySidebar` (`src/components/planning-poker/ParticipantStorySidebar.tsx`): read-only story sidebar for participants with room copy action and active story highlighting.
 - `PlayerList` (`src/components/planning-poker/PlayerList.tsx`): participant roster with online/voting indicators and phase-aware rendering.
-- `PlanningPokerGameContent` (`src/components/planning-poker/PlanningPokerGameContent.tsx`): central room content shell for story header, voting controls, results, and card deck; uses default deck from `src/lib/constants/planningPoker.ts` with optional `cards` override.
+- `PlanningPokerGameContent` (`src/components/planning-poker/PlanningPokerGameContent.tsx`): central room content shell for story header, voting controls, results, and card deck; uses default deck from `src/lib/constants/planningPoker.ts` with optional `cards` override. Moderator story renaming is icon-driven with inline edit/save flow in both lobby selected-story and active non-lobby story headers.
 - `PokerHand` (`src/components/planning-poker/PokerHand.tsx`): raised-hand and recent-message presence panel for active session collaboration.
 - `RightSidebar` (`src/components/planning-poker/RightSidebar.tsx`): drawer-based right sidebar orchestrating open/tab state, unread tracking, chat input state, and tab-specific content mounting.
 - `RightSidebarIconRail` (`src/components/planning-poker/right-sidebar/RightSidebarIconRail.tsx`): persistent icon rail for collapse/open control plus chat, hand, and moderator timer tab entry points.

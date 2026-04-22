@@ -71,9 +71,9 @@ function GameRoom() {
 
   if (gameState.phase === 'dashboard') {
     return (
-      <Container as="main" className="relative -mx-4 flex h-full overflow-hidden" disableDefaultClasses>
-        <Container as="section" className="flex-1 overflow-y-auto px-4 py-8" disableDefaultClasses>
-          <Container as="div" className="mx-auto max-w-2xl" disableDefaultClasses>
+      <Container as="main" className="relative -mx-4 flex min-h-0 grow overflow-hidden" disableDefaultClasses>
+        <Container as="section" className="flex min-h-0 flex-1 overflow-y-auto px-4 py-8" disableDefaultClasses>
+          <Container as="div" className="mx-auto flex min-h-full w-full max-w-2xl flex-col" disableDefaultClasses>
             <SessionDashboard isModerator={isModerator} onSetEstimate={setStoryEstimate} storyList={storyList} />
           </Container>
         </Container>

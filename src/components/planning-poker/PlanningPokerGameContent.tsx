@@ -1,9 +1,10 @@
 import type { KeyboardEvent } from 'react'
 
 import { Form, Input } from '@base-ui/react'
+import { Save, SquarePen } from 'lucide-react'
 import { useState } from 'react'
 
-import type { ChatMessage, GameState, PlayerData } from '@/hooks/usePlanningPoker'
+import type { ChatMessage, GameState, PlayerData, StoryItem } from '@/hooks/usePlanningPoker'
 
 import Button from '@/components/basic/Button'
 import Container from '@/components/basic/Container'
@@ -37,7 +38,7 @@ interface PlanningPokerGameContentProps {
   readonly startTimer: () => void
   readonly startVoting: (story: string) => void
   readonly stopTimer: () => void
-  readonly storyList: { estimatedVote?: string }[]
+  readonly storyList: StoryItem[]
   readonly timerRemaining: null | number
 }
 
@@ -66,6 +67,8 @@ export default function PlanningPokerGameContent({
 }: PlanningPokerGameContentProps) {
   const [adHocInput, setAdHocInput] = useState('')
   const [showAdHoc, setShowAdHoc] = useState(false)
+  const [isEditingStoryTitle, setIsEditingStoryTitle] = useState(false)
+  const [storyTitleInput, setStoryTitleInput] = useState('')
 
   const allVoted = players.length > 0 && players.filter((p) => p.isOnline).every((p) => p.voted)
   const hasUnestimated = storyList.some((story) => !story.estimatedVote)
@@ -100,6 +103,41 @@ export default function PlanningPokerGameContent({
     submitAdHocStart()
   }
 
+  function openStoryRenameEditor() {
+    setStoryTitleInput(gameState.story)
+    setIsEditingStoryTitle(true)
+  }
+
+  function closeStoryRenameEditor() {
+    setIsEditingStoryTitle(false)
+    setStoryTitleInput('')
+  }
+
+  function saveStoryRename() {
+    const nextStoryTitle = storyTitleInput.trim()
+
+    if (!nextStoryTitle) {
+      return
+    }
+
+    startVoting(nextStoryTitle)
+    closeStoryRenameEditor()
+  }
+
+  function handleStoryRenameSubmit(event: FormSubmitEvent) {
+    event.preventDefault()
+    saveStoryRename()
+  }
+
+  function handleStoryRenameInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== 'Enter') {
+      return
+    }
+
+    event.preventDefault()
+    saveStoryRename()
+  }
+
   function handleAdHocInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key !== 'Enter') {
       return
@@ -109,25 +147,60 @@ export default function PlanningPokerGameContent({
     submitAdHocStart()
   }
 
-  function handleRenameStory(e: FormSubmitEvent) {
-    e.preventDefault()
-    if (!adHocInput.trim()) return
-
-    startVoting(adHocInput.trim())
-    setAdHocInput('')
-  }
-
   function renderModeratorLobbySection() {
     if (!isModerator || gameState.phase !== 'lobby') {
       return null
     }
 
     if (gameState.story && !showAdHoc) {
+      if (isEditingStoryTitle) {
+        return (
+          <Form className="flex gap-2" onSubmit={handleStoryRenameSubmit}>
+            <Input
+              autoFocus
+              className="border-border bg-bg-surface text-ink placeholder:text-ink-muted focus:border-primary min-w-0 flex-1 rounded-lg border px-3 py-1.5 text-sm outline-none"
+              onChange={(e) => setStoryTitleInput(e.target.value)}
+              onKeyDown={handleStoryRenameInputKeyDown}
+              placeholder="Rename story…"
+              type="text"
+              value={storyTitleInput}
+            />
+            <Button
+              aria-label="Save story name"
+              className="rounded-lg px-2.5 py-1.5"
+              disabled={!storyTitleInput.trim()}
+              onClick={saveStoryRename}
+              type="button"
+            >
+              <Save className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              aria-label="Cancel story rename"
+              className="text-ink-muted rounded-lg px-2 py-1.5 text-xs"
+              onClick={closeStoryRenameEditor}
+              type="button"
+              variant="outline"
+            >
+              Cancel
+            </Button>
+          </Form>
+        )
+      }
+
       return (
         <Container as="div" className="flex items-center gap-2" disableDefaultClasses>
-          <Typography as="h2" className="display-title text-ink min-w-0 flex-1 truncate text-xl font-bold">
+          <Typography as="h2" className="text-ink min-w-0 flex-1 truncate text-xl font-bold">
             {gameState.story}
           </Typography>
+          <Button
+            aria-label="Edit story name"
+            className="text-ink-muted shrink-0 rounded-lg px-2 py-1.5"
+            onClick={openStoryRenameEditor}
+            type="button"
+            variant="outline"
+          >
+            <SquarePen className="h-3.5 w-3.5" />
+          </Button>
           <Button
             className="shrink-0 rounded-lg px-3 py-1.5 text-sm"
             onClick={() => startVoting(gameState.story)}
@@ -172,6 +245,7 @@ export default function PlanningPokerGameContent({
             onClick={() => {
               setShowAdHoc(false)
               setAdHocInput('')
+              closeStoryRenameEditor()
             }}
             type="button"
             variant="outline"
@@ -190,7 +264,10 @@ export default function PlanningPokerGameContent({
           </Typography>
           <Button
             className="text-ink-muted shrink-0 rounded-lg px-2 py-1 text-xs"
-            onClick={() => setShowAdHoc(true)}
+            onClick={() => {
+              closeStoryRenameEditor()
+              setShowAdHoc(true)
+            }}
             type="button"
             variant="outline"
           >
@@ -237,9 +314,55 @@ export default function PlanningPokerGameContent({
 
             {gameState.phase !== 'lobby' && (
               <Container as="div" className="flex items-center gap-2" disableDefaultClasses>
-                <Typography as="h2" className="display-title text-ink min-w-0 flex-1 truncate text-xl font-bold">
-                  {gameState.story || '(No story set)'}
-                </Typography>
+                {isModerator && isEditingStoryTitle ? (
+                  <Form className="flex min-w-0 flex-1 gap-2" onSubmit={handleStoryRenameSubmit}>
+                    <Input
+                      autoFocus
+                      className="border-border bg-bg-surface text-ink placeholder:text-ink-muted focus:border-primary min-w-0 flex-1 rounded-lg border px-2.5 py-1 text-sm outline-none"
+                      onChange={(e) => setStoryTitleInput(e.target.value)}
+                      onKeyDown={handleStoryRenameInputKeyDown}
+                      placeholder="Rename story…"
+                      type="text"
+                      value={storyTitleInput}
+                    />
+                    <Button
+                      aria-label="Save story name"
+                      className="rounded-lg px-2"
+                      disabled={!storyTitleInput.trim()}
+                      onClick={saveStoryRename}
+                      type="button"
+                    >
+                      <Save className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      aria-label="Cancel story rename"
+                      className="text-ink-muted rounded-lg px-2 py-1 text-xs"
+                      onClick={closeStoryRenameEditor}
+                      type="button"
+                      variant="outline"
+                    >
+                      Cancel
+                    </Button>
+                  </Form>
+                ) : (
+                  <>
+                    <Typography as="h2" className="text-ink min-w-0 flex-1 truncate font-mono text-xl font-bold">
+                      {gameState.story || '(No story set)'}
+                    </Typography>
+                    {isModerator && gameState.story && (
+                      <Button
+                        aria-label="Edit story name"
+                        className="text-ink-muted shrink-0 rounded-lg px-2 py-1.5"
+                        onClick={openStoryRenameEditor}
+                        type="button"
+                        variant="outline"
+                      >
+                        <SquarePen className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </>
+                )}
+
                 {timerRemaining !== null && gameState.phase === 'voting' && (
                   <CountdownClock remaining={timerRemaining} total={gameState.timerDuration} />
                 )}
@@ -262,26 +385,6 @@ export default function PlanningPokerGameContent({
                 </Typography>
               )}
             </Container>
-          )}
-
-          {gameState.phase === 'voting' && isModerator && (
-            <Form className="flex shrink-0 gap-1.5" onSubmit={handleRenameStory}>
-              <Input
-                className="border-border bg-bg-surface text-ink placeholder:text-ink-muted focus:border-primary w-28 rounded-lg border px-2 py-1 text-xs outline-none"
-                onChange={(e) => setAdHocInput(e.target.value)}
-                placeholder="Rename…"
-                type="text"
-                value={adHocInput}
-              />
-              <Button
-                className="text-primary border-primary rounded-lg px-2 py-1 text-xs"
-                disabled={!adHocInput.trim()}
-                type="submit"
-                variant="outline"
-              >
-                Rename
-              </Button>
-            </Form>
           )}
         </Container>
       </IslandShell>

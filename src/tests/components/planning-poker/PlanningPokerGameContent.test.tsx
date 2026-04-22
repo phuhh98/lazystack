@@ -175,4 +175,56 @@ describe('PlanningPokerGameContent', () => {
     expect(startVoting).toHaveBeenCalledWith('Stabilize reconnection')
     expect(startVoting).toHaveBeenCalledTimes(1)
   })
+
+  it('renames current story from voting header via edit and save icons', async () => {
+    const user = userEvent.setup()
+    const startVoting = vi.fn()
+
+    render(
+      <PlanningPokerGameContent
+        {...baseProps}
+        gameState={{
+          ...gameState,
+          phase: 'voting',
+          story: 'Legacy title',
+        }}
+        startVoting={startVoting}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Edit story name' }))
+    const renameInput = screen.getByPlaceholderText('Rename story…')
+    await user.clear(renameInput)
+    await user.type(renameInput, 'Refined title')
+    await user.click(screen.getByRole('button', { name: 'Save story name' }))
+
+    expect(startVoting).toHaveBeenCalledWith('Refined title')
+    expect(startVoting).toHaveBeenCalledTimes(1)
+  })
+
+  it('renames selected lobby story with the icon-triggered editor', async () => {
+    const user = userEvent.setup()
+    const startVoting = vi.fn()
+
+    render(
+      <PlanningPokerGameContent
+        {...baseProps}
+        gameState={{
+          ...gameState,
+          phase: 'lobby',
+          story: 'Backlog story',
+        }}
+        startVoting={startVoting}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Edit story name' }))
+    const renameInput = screen.getByPlaceholderText('Rename story…')
+    await user.clear(renameInput)
+    await user.type(renameInput, 'Backlog story updated')
+    await user.click(screen.getByRole('button', { name: 'Save story name' }))
+
+    expect(startVoting).toHaveBeenCalledWith('Backlog story updated')
+    expect(startVoting).toHaveBeenCalledTimes(1)
+  })
 })

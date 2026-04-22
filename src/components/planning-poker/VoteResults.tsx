@@ -77,6 +77,7 @@ export default function VoteResults({
 
   const canSubmitNextStory = selectedEstimateOverride.length > 0
   const hasQuestionVote = tally.has('?')
+  const hasNoVotesRecorded = sortedEntries.length === 0
 
   useEffect(() => {
     setSelectedEstimateOverride(suggestedEstimate)
@@ -207,7 +208,7 @@ export default function VoteResults({
               )}
               <Button
                 className="gap-1.5 rounded-xl px-3 py-1.5 text-xs"
-                disabled={!hasQuestionVote}
+                disabled={!(hasQuestionVote || hasNoVotesRecorded)}
                 onClick={onReestimate}
                 type="button"
                 variant="outline"

@@ -131,6 +131,28 @@ describe('VoteResults', () => {
     expect(screen.getByRole('button', { name: 'Re-estimate' })).toBeDisabled()
   })
 
+  it('enables re-estimate and calls callback when no votes are recorded', async () => {
+    const user = userEvent.setup()
+    const onReestimate = vi.fn()
+
+    render(
+      <VoteResults
+        isConsensus={false}
+        isModerator={true}
+        onEndSession={() => {}}
+        onNextStory={() => {}}
+        onReestimate={onReestimate}
+        players={[buildPlayer('1', null, false), buildPlayer('2', null, false)]}
+      />,
+    )
+
+    const reestimateButton = screen.getByRole('button', { name: 'Re-estimate' })
+    expect(reestimateButton).toBeEnabled()
+
+    await user.click(reestimateButton)
+    expect(onReestimate).toHaveBeenCalledTimes(1)
+  })
+
   it('changes button to "End Session" when all stories are estimated', () => {
     render(
       <VoteResults

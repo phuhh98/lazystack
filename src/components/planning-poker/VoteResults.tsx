@@ -1,7 +1,8 @@
+import { Dialog } from '@base-ui/react'
 import { ArrowRight, RotateCcw, SquareCheckBig, SquarePen, SquareX } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import type { PlayerData } from '@/hooks/usePlanningPoker'
+import type { PlayerData, StoryItem } from '@/hooks/usePlanningPoker'
 
 import Button from '@/components/basic/Button'
 import Container from '@/components/basic/Container'
@@ -12,10 +13,12 @@ import SetCardValuePopover from '@/components/planning-poker/SetCardValuePopover
 export interface VoteResultsProps {
   readonly isConsensus: boolean
   readonly isModerator: boolean
+  readonly onAddAdhoc?: () => void
   readonly onEndSession: () => void
   readonly onNextStory: (estimateOverride?: string) => void
   readonly onReestimate: () => void
   readonly players: PlayerData[]
+  readonly storyList?: StoryItem[]
 }
 
 function computeStats(players: PlayerData[]) {
@@ -39,13 +42,18 @@ const CARD_ORDER = ['1', '2', '3', '5', '8', '13', '21', '?', '☕']
 export default function VoteResults({
   isConsensus,
   isModerator,
+  onAddAdhoc,
   onEndSession,
   onNextStory,
   onReestimate,
   players,
+  storyList = [],
 }: VoteResultsProps) {
   const { average, tally } = computeStats(players)
   const [selectedEstimateOverride, setSelectedEstimateOverride] = useState('')
+  const [showEndSessionModal, setShowEndSessionModal] = useState(false)
+
+  const allStoriesVoted = storyList.length > 0 && storyList.every((story) => story.estimatedVote)
 
   const sortedEntries = [...tally.entries()].sort((a, b) => {
     const ai = CARD_ORDER.indexOf(a[0])
@@ -80,110 +88,182 @@ export default function VoteResults({
     setSelectedEstimateOverride('')
   }
 
+  function handleEndSessionClick() {
+    if (allStoriesVoted) {
+      setShowEndSessionModal(true)
+    } else {
+      onEndSession()
+    }
+  }
+
+  function handleConfirmEndSession() {
+    setShowEndSessionModal(false)
+    onEndSession()
+  }
+
+  function handleAddAdhoc() {
+    setShowEndSessionModal(false)
+    onAddAdhoc?.()
+  }
+
   return (
-    <IslandShell className="shrink-0 rounded-xl p-3">
-      <Container as="div" className="mb-3 flex flex-wrap items-center gap-2" disableDefaultClasses>
-        <Typography as="p" className="island-kicker">
-          Results
-        </Typography>
-        {isConsensus && (
-          <Typography as="span" className="bg-success rounded-full px-3 py-1 text-xs font-semibold text-white">
-            Consensus!
+    <>
+      <IslandShell className="shrink-0 rounded-xl p-3">
+        <Container as="div" className="mb-3 flex flex-wrap items-center gap-2" disableDefaultClasses>
+          <Typography as="p" className="island-kicker">
+            Results
           </Typography>
-        )}
-        {average !== null && (
-          <Typography
-            as="span"
-            className="bg-chip-bg border-chip-border text-ink rounded-full border px-3 py-1 text-sm font-semibold"
-          >
-            Avg: {average % 1 === 0 ? average : average.toFixed(1)}
-          </Typography>
-        )}
-      </Container>
-
-      {/* Vote histogram */}
-      {sortedEntries.length > 0 ? (
-        <Container as="div" className="mb-3 flex flex-wrap items-end gap-2" disableDefaultClasses>
-          {sortedEntries.map(([value, count]) => (
-            <Container as="div" className="flex flex-col items-center gap-1" disableDefaultClasses key={value}>
-              <Container as="div" className="flex flex-col items-center gap-0.5" disableDefaultClasses>
-                <Typography as="span" className="text-ink-muted text-xs font-medium">
-                  {count}
-                </Typography>
-                <div
-                  className="bg-primary w-8 rounded-t-lg transition-all duration-500"
-                  style={{
-                    height: `${Math.max(6, (count / maxCount) * 60)}px`,
-                  }}
-                />
-              </Container>
-              <Typography
-                as="div"
-                className="border-primary bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg border text-sm font-bold"
-              >
-                {value}
-              </Typography>
-            </Container>
-          ))}
-        </Container>
-      ) : (
-        <Typography as="p" className="text-ink-muted mb-3 text-sm">
-          No votes recorded.
-        </Typography>
-      )}
-
-      {isModerator && (
-        <Container as="div" className="flex flex-wrap items-center justify-between gap-2" disableDefaultClasses>
-          <Container as="div" className="flex items-center gap-1.5" disableDefaultClasses>
-            <Typography as="span" className="text-ink-muted text-[10px] font-semibold tracking-wide uppercase">
-              Estimate
+          {isConsensus && (
+            <Typography as="span" className="bg-success rounded-full px-3 py-1 text-xs font-semibold text-white">
+              Consensus!
             </Typography>
-            <SetCardValuePopover
-              currentValue={selectedEstimateOverride || null}
-              onSelectValue={setSelectedEstimateOverride}
-              title="Set estimate"
-              triggerAriaLabel="Edit estimate"
-              triggerClassName="bg-bg-surface border-border text-ink flex items-center gap-1 rounded-xl border px-2.5 py-1"
-              triggerTitle="Edit estimate"
+          )}
+          {average !== null && (
+            <Typography
+              as="span"
+              className="bg-chip-bg border-chip-border text-ink rounded-full border px-3 py-1 text-sm font-semibold"
             >
-              <span className="text-xs font-bold">{selectedEstimateOverride || '—'}</span>
-              <SquarePen className="h-3.5 w-3.5" />
-            </SetCardValuePopover>
-          </Container>
-
-          <Container as="div" className="flex flex-wrap gap-2" disableDefaultClasses>
-            <Button
-              className="gap-1.5 rounded-xl px-3 py-1.5 text-xs"
-              onClick={onEndSession}
-              type="button"
-              variant="outline"
-            >
-              <SquareX className="h-3.5 w-3.5" />
-              End Session
-            </Button>
-            <Button
-              className="gap-1.5 rounded-xl px-3 py-1.5 text-xs"
-              disabled={!hasQuestionVote}
-              onClick={onReestimate}
-              type="button"
-              variant="outline"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              Re-estimate
-            </Button>
-            <Button
-              className="gap-1.5 rounded-xl px-4 py-1.5 text-xs"
-              disabled={!canSubmitNextStory}
-              onClick={handleNextStory}
-              type="button"
-            >
-              <SquareCheckBig className="h-3.5 w-3.5" />
-              Next Story
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          </Container>
+              Avg: {average % 1 === 0 ? average : average.toFixed(1)}
+            </Typography>
+          )}
         </Container>
-      )}
-    </IslandShell>
+
+        {/* Vote histogram */}
+        {sortedEntries.length > 0 ? (
+          <Container as="div" className="mb-3 flex flex-wrap items-end gap-2" disableDefaultClasses>
+            {sortedEntries.map(([value, count]) => (
+              <Container as="div" className="flex flex-col items-center gap-1" disableDefaultClasses key={value}>
+                <Container as="div" className="flex flex-col items-center gap-0.5" disableDefaultClasses>
+                  <Typography as="span" className="text-ink-muted text-xs font-medium">
+                    {count}
+                  </Typography>
+                  <div
+                    className="bg-primary w-8 rounded-t-lg transition-all duration-500"
+                    style={{
+                      height: `${Math.max(6, (count / maxCount) * 60)}px`,
+                    }}
+                  />
+                </Container>
+                <Typography
+                  as="div"
+                  className="border-primary bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg border text-sm font-bold"
+                >
+                  {value}
+                </Typography>
+              </Container>
+            ))}
+          </Container>
+        ) : (
+          <Typography as="p" className="text-ink-muted mb-3 text-sm">
+            No votes recorded.
+          </Typography>
+        )}
+
+        {isModerator && (
+          <Container as="div" className="flex flex-wrap items-center justify-between gap-2" disableDefaultClasses>
+            <Container as="div" className="flex items-center gap-1.5" disableDefaultClasses>
+              <Typography as="span" className="text-ink-muted text-[10px] font-semibold tracking-wide uppercase">
+                Estimate
+              </Typography>
+              <SetCardValuePopover
+                currentValue={selectedEstimateOverride || null}
+                onSelectValue={setSelectedEstimateOverride}
+                title="Set estimate"
+                triggerAriaLabel="Edit estimate"
+                triggerClassName="bg-bg-surface border-border text-ink flex items-center gap-1 rounded-xl border px-2.5 py-1"
+                triggerTitle="Edit estimate"
+              >
+                <span className="text-xs font-bold">{selectedEstimateOverride || '—'}</span>
+                <SquarePen className="h-3.5 w-3.5" />
+              </SetCardValuePopover>
+            </Container>
+
+            <Container as="div" className="flex flex-wrap gap-2" disableDefaultClasses>
+              {!allStoriesVoted && (
+                <Button
+                  className="gap-1.5 rounded-xl px-3 py-1.5 text-xs"
+                  onClick={handleEndSessionClick}
+                  type="button"
+                  variant="outline"
+                >
+                  <SquareX className="h-3.5 w-3.5" />
+                  End Session
+                </Button>
+              )}
+              <Button
+                className="gap-1.5 rounded-xl px-3 py-1.5 text-xs"
+                disabled={!hasQuestionVote}
+                onClick={onReestimate}
+                type="button"
+                variant="outline"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Re-estimate
+              </Button>
+              <Button
+                className="gap-1.5 rounded-xl px-4 py-1.5 text-xs"
+                disabled={allStoriesVoted ? false : !canSubmitNextStory}
+                onClick={allStoriesVoted ? handleEndSessionClick : handleNextStory}
+                type="button"
+              >
+                {allStoriesVoted ? (
+                  <>
+                    <SquareX className="h-3.5 w-3.5" />
+                    End Session
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </>
+                ) : (
+                  <>
+                    <SquareCheckBig className="h-3.5 w-3.5" />
+                    Next Story
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </>
+                )}
+              </Button>
+            </Container>
+          </Container>
+        )}
+      </IslandShell>
+
+      <Dialog.Root onOpenChange={setShowEndSessionModal} open={showEndSessionModal}>
+        <Dialog.Portal>
+          <Dialog.Backdrop className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" />
+          <Dialog.Popup className="bg-bg-surface fixed top-1/2 left-1/2 z-50 w-96 max-w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-2xl p-6 shadow-2xl">
+            <div className="mb-6 flex flex-col gap-2">
+              <Typography as="h2" className="text-lg font-bold">
+                End Session?
+              </Typography>
+              <Typography as="p" className="text-ink-muted text-sm">
+                All stories have been estimated. Are you sure you want to end this session?
+              </Typography>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button
+                className="flex-1 rounded-xl px-3 py-2 text-sm"
+                onClick={() => setShowEndSessionModal(false)}
+                type="button"
+                variant="outline"
+              >
+                Cancel
+              </Button>
+              {onAddAdhoc && (
+                <Button
+                  className="flex-1 rounded-xl px-3 py-2 text-sm"
+                  onClick={handleAddAdhoc}
+                  type="button"
+                  variant="outline"
+                >
+                  Add Adhoc
+                </Button>
+              )}
+              <Button className="flex-1 rounded-xl px-3 py-2 text-sm" onClick={handleConfirmEndSession} type="button">
+                Confirm End
+              </Button>
+            </div>
+          </Dialog.Popup>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
   )
 }

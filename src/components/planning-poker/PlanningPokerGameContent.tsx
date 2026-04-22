@@ -330,6 +330,7 @@ export default function PlanningPokerGameContent({
         <VoteResults
           isConsensus={isConsensus}
           isModerator={isModerator}
+          onAddAdhoc={isModerator ? () => setShowAdHoc(true) : undefined}
           onEndSession={endSession}
           onNextStory={(estimatedVote) => {
             if (estimatedVote) {
@@ -338,6 +339,7 @@ export default function PlanningPokerGameContent({
           }}
           onReestimate={() => startVoting(gameState.story)}
           players={players}
+          storyList={storyList}
         />
       )}
 

@@ -130,4 +130,125 @@ describe('VoteResults', () => {
 
     expect(screen.getByRole('button', { name: 'Re-estimate' })).toBeDisabled()
   })
+
+  it('changes button to "End Session" when all stories are estimated', () => {
+    render(
+      <VoteResults
+        isConsensus={false}
+        isModerator={true}
+        onEndSession={() => {}}
+        onNextStory={() => {}}
+        onReestimate={() => {}}
+        players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
+        storyList={[
+          { estimatedVote: '5', id: '1', title: 'Story 1' },
+          { estimatedVote: '8', id: '2', title: 'Story 2' },
+        ]}
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: /End Session/ })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Next Story/ })).not.toBeInTheDocument()
+  })
+
+  it('shows confirmation modal when End Session is clicked with all stories estimated', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <VoteResults
+        isConsensus={false}
+        isModerator={true}
+        onEndSession={() => {}}
+        onNextStory={() => {}}
+        onReestimate={() => {}}
+        players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
+        storyList={[
+          { estimatedVote: '5', id: '1', title: 'Story 1' },
+          { estimatedVote: '8', id: '2', title: 'Story 2' },
+        ]}
+      />,
+    )
+
+    const endSessionButton = screen.getByRole('button', { name: /End Session/ })
+    await user.click(endSessionButton)
+
+    expect(screen.getByRole('heading', { name: 'End Session?' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Confirm End' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+  })
+
+  it('calls onEndSession when Confirm End is clicked in modal', async () => {
+    const user = userEvent.setup()
+    const onEndSession = vi.fn()
+
+    render(
+      <VoteResults
+        isConsensus={false}
+        isModerator={true}
+        onEndSession={onEndSession}
+        onNextStory={() => {}}
+        onReestimate={() => {}}
+        players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
+        storyList={[
+          { estimatedVote: '5', id: '1', title: 'Story 1' },
+          { estimatedVote: '8', id: '2', title: 'Story 2' },
+        ]}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /End Session/ }))
+    await user.click(screen.getByRole('button', { name: 'Confirm End' }))
+
+    expect(onEndSession).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows Add Adhoc button in modal when callback provided', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <VoteResults
+        isConsensus={false}
+        isModerator={true}
+        onAddAdhoc={() => {}}
+        onEndSession={() => {}}
+        onNextStory={() => {}}
+        onReestimate={() => {}}
+        players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
+        storyList={[
+          { estimatedVote: '5', id: '1', title: 'Story 1' },
+          { estimatedVote: '8', id: '2', title: 'Story 2' },
+        ]}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /End Session/ }))
+
+    expect(screen.getByRole('button', { name: 'Add Adhoc' })).toBeInTheDocument()
+  })
+
+  it('calls onAddAdhoc when Add Adhoc button is clicked', async () => {
+    const user = userEvent.setup()
+    const onAddAdhoc = vi.fn()
+
+    render(
+      <VoteResults
+        isConsensus={false}
+        isModerator={true}
+        onAddAdhoc={onAddAdhoc}
+        onEndSession={() => {}}
+        onNextStory={() => {}}
+        onReestimate={() => {}}
+        players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
+        storyList={[
+          { estimatedVote: '5', id: '1', title: 'Story 1' },
+          { estimatedVote: '8', id: '2', title: 'Story 2' },
+        ]}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /End Session/ }))
+    await user.click(screen.getByRole('button', { name: 'Add Adhoc' }))
+
+    expect(onAddAdhoc).toHaveBeenCalledTimes(1)
+  })
 })

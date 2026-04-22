@@ -51,7 +51,7 @@ When to use this file:
 - `SetCardValuePopover` (`src/components/planning-poker/SetCardValuePopover.tsx`): reusable estimate picker popover for choosing planning card values from the standard deck.
 - `SessionDashboard` (`src/components/planning-poker/SessionDashboard.tsx`): end-of-session summary view with completion stats and estimate editing.
 - `StorySidebar` (`src/components/planning-poker/StorySidebar.tsx`): moderator story sidebar with add/reorder/remove/select actions and room copy affordance.
-- `VoteResults` (`src/components/planning-poker/VoteResults.tsx`): reveal-phase results, tally, average display, and moderator actions with shared popover estimate editing plus a conditional re-estimate action when any vote is `?`.
+- `VoteResults` (`src/components/planning-poker/VoteResults.tsx`): reveal-phase results, tally, average display, and moderator actions with shared popover estimate editing plus a conditional re-estimate action when any vote is `?`. When all stories are estimated, "Next Story" button changes to "End Session" and shows a confirmation modal with options to confirm end, cancel, or add an adhoc story.
 
 ## Related Hooks/Stores
 

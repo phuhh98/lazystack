@@ -82,6 +82,19 @@ export default function PlanningPokerGameContent({
     setShowAdHoc(false)
   }
 
+  function handleAddAdhocFromResults(estimateOverride: string) {
+    const nextAdhocTitle = `Ad-hoc ${storyList.length + 1}`
+
+    if (estimateOverride.trim()) {
+      nextStory(estimateOverride)
+    }
+
+    // Immediately create and start the next ad-hoc story from the revealed-state modal action.
+    startVoting(nextAdhocTitle)
+    setAdHocInput('')
+    setShowAdHoc(false)
+  }
+
   function handleAdHocStartSubmit(event: FormSubmitEvent) {
     event.preventDefault()
     submitAdHocStart()
@@ -331,7 +344,7 @@ export default function PlanningPokerGameContent({
           currentStory={gameState.story}
           isConsensus={isConsensus}
           isModerator={isModerator}
-          onAddAdhoc={isModerator ? () => setShowAdHoc(true) : undefined}
+          onAddAdhoc={isModerator ? handleAddAdhocFromResults : undefined}
           onEndSession={endSession}
           onNextStory={(estimatedVote) => {
             if (estimatedVote) {

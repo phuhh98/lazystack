@@ -201,13 +201,14 @@ describe('VoteResults', () => {
   it('calls onEndSession when Confirm End is clicked in modal', async () => {
     const user = userEvent.setup()
     const onEndSession = vi.fn()
+    const onNextStory = vi.fn()
 
     render(
       <VoteResults
         isConsensus={false}
         isModerator={true}
         onEndSession={onEndSession}
-        onNextStory={() => {}}
+        onNextStory={onNextStory}
         onReestimate={() => {}}
         players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
         storyList={[
@@ -221,6 +222,35 @@ describe('VoteResults', () => {
     await user.click(screen.getByRole('button', { name: 'Confirm End' }))
 
     expect(onEndSession).toHaveBeenCalledTimes(1)
+    expect(onNextStory).not.toHaveBeenCalled()
+  })
+
+  it('persists final pending story estimate when Confirm End is clicked', async () => {
+    const user = userEvent.setup()
+    const onEndSession = vi.fn()
+    const onNextStory = vi.fn()
+
+    render(
+      <VoteResults
+        currentStory="Story 2"
+        isConsensus={false}
+        isModerator={true}
+        onEndSession={onEndSession}
+        onNextStory={onNextStory}
+        onReestimate={() => {}}
+        players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
+        storyList={[
+          { estimatedVote: '5', id: '1', title: 'Story 1' },
+          { estimatedVote: null, id: '2', title: 'Story 2' },
+        ]}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /End Session/ }))
+    await user.click(screen.getByRole('button', { name: 'Confirm End' }))
+
+    expect(onNextStory).toHaveBeenCalledWith('5.5')
+    expect(onEndSession).not.toHaveBeenCalled()
   })
 
   it('shows Add Adhoc button in modal when callback provided', async () => {
@@ -271,5 +301,32 @@ describe('VoteResults', () => {
     await user.click(screen.getByRole('button', { name: 'Add Adhoc' }))
 
     expect(onAddAdhoc).toHaveBeenCalledTimes(1)
+  })
+
+  it('passes estimate override to onAddAdhoc from final pending story', async () => {
+    const user = userEvent.setup()
+    const onAddAdhoc = vi.fn()
+
+    render(
+      <VoteResults
+        currentStory="Story 2"
+        isConsensus={false}
+        isModerator={true}
+        onAddAdhoc={onAddAdhoc}
+        onEndSession={() => {}}
+        onNextStory={() => {}}
+        onReestimate={() => {}}
+        players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
+        storyList={[
+          { estimatedVote: '5', id: '1', title: 'Story 1' },
+          { estimatedVote: null, id: '2', title: 'Story 2' },
+        ]}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /End Session/ }))
+    await user.click(screen.getByRole('button', { name: 'Add Adhoc' }))
+
+    expect(onAddAdhoc).toHaveBeenCalledWith('5.5')
   })
 })

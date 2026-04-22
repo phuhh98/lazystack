@@ -14,7 +14,7 @@ export interface VoteResultsProps {
   readonly currentStory?: string
   readonly isConsensus: boolean
   readonly isModerator: boolean
-  readonly onAddAdhoc?: () => void
+  readonly onAddAdhoc?: (estimateOverride: string) => void
   readonly onEndSession: () => void
   readonly onNextStory: (estimateOverride?: string) => void
   readonly onReestimate: () => void
@@ -56,10 +56,9 @@ export default function VoteResults({
   const [showEndSessionModal, setShowEndSessionModal] = useState(false)
 
   const unestimatedStories = storyList.filter((story) => !story.estimatedVote)
-  const allStoriesVoted =
-    storyList.length > 0 &&
-    (unestimatedStories.length === 0 ||
-      (unestimatedStories.length === 1 && unestimatedStories[0]?.title === currentStory))
+  const hasNoPendingStory = unestimatedStories.length === 0
+  const hasOnlyCurrentStoryPending = unestimatedStories.length === 1 && unestimatedStories[0]?.title === currentStory
+  const allStoriesVoted = storyList.length > 0 && (hasNoPendingStory || hasOnlyCurrentStoryPending)
 
   const sortedEntries = [...tally.entries()].sort((a, b) => {
     const ai = CARD_ORDER.indexOf(a[0])
@@ -104,12 +103,26 @@ export default function VoteResults({
 
   function handleConfirmEndSession() {
     setShowEndSessionModal(false)
+
+    if (hasOnlyCurrentStoryPending && canSubmitNextStory) {
+      onNextStory(selectedEstimateOverride)
+      return
+    }
+
     onEndSession()
   }
 
   function handleAddAdhoc() {
     setShowEndSessionModal(false)
-    onAddAdhoc?.()
+
+    if (hasOnlyCurrentStoryPending && canSubmitNextStory) {
+      onAddAdhoc?.(selectedEstimateOverride)
+      return
+    }
+
+    if (onAddAdhoc) {
+      onAddAdhoc(selectedEstimateOverride)
+    }
   }
 
   return (
@@ -246,7 +259,7 @@ export default function VoteResults({
 
             <div className="flex flex-wrap gap-2">
               <Button
-                className="flex-1 rounded-xl px-3 py-2 text-sm"
+                className="flex-1 rounded-xl px-3 py-2 text-xs"
                 onClick={() => setShowEndSessionModal(false)}
                 type="button"
                 variant="outline"
@@ -255,7 +268,8 @@ export default function VoteResults({
               </Button>
               {onAddAdhoc && (
                 <Button
-                  className="flex-1 rounded-xl px-3 py-2 text-sm"
+                  className="flex-1 rounded-xl px-3 py-2 text-xs"
+                  disabled={!canSubmitNextStory}
                   onClick={handleAddAdhoc}
                   type="button"
                   variant="outline"
@@ -263,7 +277,7 @@ export default function VoteResults({
                   Add Adhoc
                 </Button>
               )}
-              <Button className="flex-1 rounded-xl px-3 py-2 text-sm" onClick={handleConfirmEndSession} type="button">
+              <Button className="flex-1 rounded-xl px-3 py-2 text-xs" onClick={handleConfirmEndSession} type="button">
                 Confirm End
               </Button>
             </div>

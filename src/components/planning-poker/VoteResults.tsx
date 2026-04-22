@@ -11,6 +11,7 @@ import Typography from '@/components/basic/Typography'
 import SetCardValuePopover from '@/components/planning-poker/SetCardValuePopover'
 
 export interface VoteResultsProps {
+  readonly currentStory?: string
   readonly isConsensus: boolean
   readonly isModerator: boolean
   readonly onAddAdhoc?: () => void
@@ -40,6 +41,7 @@ function computeStats(players: PlayerData[]) {
 const CARD_ORDER = ['1', '2', '3', '5', '8', '13', '21', '?', '☕']
 
 export default function VoteResults({
+  currentStory = '',
   isConsensus,
   isModerator,
   onAddAdhoc,
@@ -53,7 +55,11 @@ export default function VoteResults({
   const [selectedEstimateOverride, setSelectedEstimateOverride] = useState('')
   const [showEndSessionModal, setShowEndSessionModal] = useState(false)
 
-  const allStoriesVoted = storyList.length > 0 && storyList.every((story) => story.estimatedVote)
+  const unestimatedStories = storyList.filter((story) => !story.estimatedVote)
+  const allStoriesVoted =
+    storyList.length > 0 &&
+    (unestimatedStories.length === 0 ||
+      (unestimatedStories.length === 1 && unestimatedStories[0]?.title === currentStory))
 
   const sortedEntries = [...tally.entries()].sort((a, b) => {
     const ai = CARD_ORDER.indexOf(a[0])

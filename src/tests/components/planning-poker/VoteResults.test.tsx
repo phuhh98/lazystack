@@ -71,7 +71,7 @@ describe('VoteResults', () => {
     expect(screen.getByRole('button', { name: 'Next Story' })).toBeEnabled()
   })
 
-  it('allows moderator to choose a non-numeric estimate from popover', async () => {
+  it('allows moderator to choose another estimate from popover', async () => {
     const user = userEvent.setup()
     const onNextStory = vi.fn()
 
@@ -87,10 +87,10 @@ describe('VoteResults', () => {
     )
 
     await user.click(screen.getByRole('button', { name: 'Edit estimate' }))
-    await user.click(screen.getByRole('button', { name: 'Set estimate to ?' }))
+    await user.click(screen.getByRole('button', { name: 'Set estimate to 21' }))
     await user.click(screen.getByRole('button', { name: 'Next Story' }))
 
-    expect(onNextStory).toHaveBeenCalledWith('?')
+    expect(onNextStory).toHaveBeenCalledWith('21')
   })
 
   it('enables re-estimate and calls callback when any vote is question mark', async () => {
@@ -143,6 +143,27 @@ describe('VoteResults', () => {
         storyList={[
           { estimatedVote: '5', id: '1', title: 'Story 1' },
           { estimatedVote: '8', id: '2', title: 'Story 2' },
+        ]}
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: /End Session/ })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Next Story/ })).not.toBeInTheDocument()
+  })
+
+  it('shows End Session when only current revealed story is unestimated', () => {
+    render(
+      <VoteResults
+        currentStory="Story 2"
+        isConsensus={false}
+        isModerator={true}
+        onEndSession={() => {}}
+        onNextStory={() => {}}
+        onReestimate={() => {}}
+        players={[buildPlayer('1', '3'), buildPlayer('2', '8')]}
+        storyList={[
+          { estimatedVote: '5', id: '1', title: 'Story 1' },
+          { estimatedVote: null, id: '2', title: 'Story 2' },
         ]}
       />,
     )

@@ -328,6 +328,7 @@ export default function PlanningPokerGameContent({
 
       {gameState.phase === 'revealed' && (
         <VoteResults
+          currentStory={gameState.story}
           isConsensus={isConsensus}
           isModerator={isModerator}
           onAddAdhoc={isModerator ? () => setShowAdHoc(true) : undefined}

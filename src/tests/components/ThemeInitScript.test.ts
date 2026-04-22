@@ -85,32 +85,12 @@ describe('Theme init script', () => {
     expect(document.documentElement.style.colorScheme).toBe('dark')
   })
 
-  it('falls back to system dark when no stored value exists', () => {
-    Object.defineProperty(globalThis, 'matchMedia', {
-      value: () => ({
-        addEventListener: () => {},
-        addListener: () => {},
-        dispatchEvent: () => false,
-        matches: true,
-        media: '(prefers-color-scheme: dark)',
-        onchange: null,
-        removeEventListener: () => {},
-        removeListener: () => {},
-      }),
-      writable: true,
-    })
-
+  it('falls back to dark by default when no stored value exists', () => {
     runThemeInitScript()
 
     expect(document.documentElement.classList.contains('dark')).toBe(true)
     expect(document.documentElement.dataset.theme).toBe('dark')
-  })
-
-  it('falls back to system light when no stored value exists', () => {
-    runThemeInitScript()
-
-    expect(document.documentElement.classList.contains('light')).toBe(true)
-    expect(document.documentElement.dataset.theme).toBe('light')
+    expect(document.documentElement.style.colorScheme).toBe('dark')
   })
 
   it('uses legacy theme key when Zustand preference is not present', () => {

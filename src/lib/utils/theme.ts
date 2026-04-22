@@ -20,13 +20,11 @@ function getDocumentThemeMode(): ThemeMode {
 
 function getInitialThemeMode(): ThemeMode {
   if (typeof window === 'undefined') {
-    return 'light'
+    return 'dark'
   }
 
   const stored = getStoredThemeMode()
-  const prefersDark =
-    typeof globalThis.matchMedia === 'function' ? globalThis.matchMedia('(prefers-color-scheme: dark)').matches : false
-  return resolveThemeMode(stored, prefersDark)
+  return resolveThemeMode(stored)
 }
 
 function getStoredThemeMode(): null | string {
@@ -55,15 +53,15 @@ function getStoredThemeMode(): null | string {
   return globalThis.localStorage.getItem('theme')
 }
 
-function resolveThemeMode(stored: null | string, prefersDark: boolean): ThemeMode {
+function resolveThemeMode(stored: null | string): ThemeMode {
   if (stored === 'dark' || stored === 'light') {
     return stored
   }
 
-  return prefersDark ? 'dark' : 'light'
+  return 'dark'
 }
 
-const THEME_INIT_SCRIPT = `(function(){try{var persisted=window.localStorage.getItem('ui-preferences');var stored=null;if(persisted!==null){try{var parsed=JSON.parse(persisted);var persistedTheme=parsed&&parsed.state&&parsed.state.themeMode;if(persistedTheme==='light'||persistedTheme==='dark'){stored=persistedTheme;}}catch(_){}}if(stored===null){stored=window.localStorage.getItem('theme');}var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var mode=(stored==='light'||stored==='dark')?stored:(prefersDark?'dark':'light');var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(mode);root.dataset.theme=mode;root.style.colorScheme=mode;}catch(e){}})();`
+const THEME_INIT_SCRIPT = `(function(){try{var persisted=window.localStorage.getItem('ui-preferences');var stored=null;if(persisted!==null){try{var parsed=JSON.parse(persisted);var persistedTheme=parsed&&parsed.state&&parsed.state.themeMode;if(persistedTheme==='light'||persistedTheme==='dark'){stored=persistedTheme;}}catch(_){}}if(stored===null){stored=window.localStorage.getItem('theme');}var mode=(stored==='light'||stored==='dark')?stored:'dark';var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(mode);root.dataset.theme=mode;root.style.colorScheme=mode;}catch(e){}})();`
 
 export {
   applyThemeMode,

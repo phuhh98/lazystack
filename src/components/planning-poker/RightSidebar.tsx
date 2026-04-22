@@ -59,6 +59,7 @@ export default function RightSidebar({
   const [input, setInput] = useState('')
   const [lastReadIndex, setLastReadIndex] = useState(0)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const [maxHeight, setMaxHeight] = useState<null | string>(null)
 
   const unread = Math.max(0, chat.length - lastReadIndex)
   const raisedPlayers = players.filter((p) => p.handRaised)
@@ -77,6 +78,20 @@ export default function RightSidebar({
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
   }, [chat.length, isOpen, activeTab])
+
+  useEffect(() => {
+    if (!sidebarRootRef.current) return
+
+    const resizeObserver = new ResizeObserver(() => {
+      const rect = sidebarRootRef.current?.getBoundingClientRect()
+      if (rect) {
+        setMaxHeight(`${rect.height}px`)
+      }
+    })
+
+    resizeObserver.observe(sidebarRootRef.current)
+    return () => resizeObserver.disconnect()
+  }, [])
 
   function handleSend(text: string) {
     if (!text.trim()) return
@@ -124,9 +139,10 @@ export default function RightSidebar({
           <Drawer.Content
             className={cn(
               'bg-bg-surface-strong/10 flex h-full flex-col overflow-hidden transition-[width] duration-200',
-              isOpen ? 'border-border w-60 border-l' : 'w-0 border-l-0',
+              isOpen ? 'border-border w-60 border-l' : 'h-0 w-0 border-l-0',
             )}
             onClick={(e) => e.stopPropagation()}
+            style={isOpen && maxHeight ? { maxHeight } : undefined}
           >
             <div className="border-border flex shrink-0 items-center justify-between border-b px-3 py-2">
               <Typography as="p" className="island-kicker text-[0.69rem] leading-none capitalize">

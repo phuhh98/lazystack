@@ -11,6 +11,22 @@ import { ROUTES } from '@/lib/constants/routes'
 
 export const Route = createFileRoute('/planning-poker/')({
   component: PlanningPokerLobby,
+  head: () => ({
+    meta: [
+      { charSet: 'utf-8' },
+      { title: 'Planning Poker - LazyStack' },
+      {
+        content:
+          'Join a Planning Poker room to estimate tasks together with your team. Generate a room code, share it, and start estimating!',
+        name: 'description',
+      },
+      {
+        content:
+          'planning poker, agile estimation, team collaboration, task estimation, project management, phuhh98@gmail.com, Huynh Hoai Phu, LazyStack',
+        name: 'keywords',
+      },
+    ],
+  }),
 })
 
 function generateRoomCode(): string {

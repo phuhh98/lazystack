@@ -11,6 +11,18 @@ import { cn } from '@/lib/utils/styles'
 import { THEME_INIT_SCRIPT } from '@/lib/utils/theme'
 import appCss from '@/styles.css?url'
 
+const GA_MEASUREMENT_ID = 'G-2VQ3234CET'
+const GA_INIT_SCRIPT = `window.dataLayer = window.dataLayer || [];
+function gtag(){window.dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_MEASUREMENT_ID}');`
+
+declare global {
+  interface Window {
+    dataLayer: any[]
+  }
+}
+
 export const Route = createRootRoute({
   head: () => ({
     links: [{ href: appCss, rel: 'stylesheet' }],
@@ -39,6 +51,9 @@ function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        {/* Google tag (gtag.js) */}
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+        <script dangerouslySetInnerHTML={{ __html: GA_INIT_SCRIPT }} />
         <HeadContent />
       </head>
       <body className="min-h-100vh w-100vw bg-bg-base dark:bg-dark-teal-900">

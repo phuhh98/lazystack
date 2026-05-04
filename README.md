@@ -2,6 +2,8 @@
 
 LazyStack is a personal productivity tools hub focused on realtime collaboration with minimal or no server-stored user data.
 
+You could visit our site at [lazystack.onrender.com](https://lazystack.onrender.com/)
+
 ## Product Direction
 
 - Realtime collaboration tools should prefer peer-to-peer sync.
